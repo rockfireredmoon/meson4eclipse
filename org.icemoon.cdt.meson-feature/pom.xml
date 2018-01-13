@@ -9,7 +9,7 @@
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <artifactId>org.icemoon.cdt.meson.feature.group</artifactId>
+  <artifactId>org.icemoon.cdt.meson</artifactId>
   <!-- always use .qualifier in manifest, we do not plan to publish this plugin
     to a maven repo. (The repository version is a different thing) -->
   <version>0.0.1-SNAPSHOT</version>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="org.icemoon.cdt.meson" version="0.0.1.qualifier">
+      <category name="meson4eclipse"/>
+   </feature>
+   <category-def name="meson4eclipse" label="Meson for Eclipse">
+      <description>
+         Integrates the Meson cross-platform buildscript generator into Eclipse C/C++ Development Toolkit (CDT).
+      </description>
+   </category-def>
+</site>

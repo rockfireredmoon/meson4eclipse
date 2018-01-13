@@ -1,0 +1,45 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %bundleName
+Bundle-Description: CDT Meson build integration
+Bundle-Copyright: 2013-2017 Martin Weber, 2018 Emerald Icemoon
+Bundle-SymbolicName: org.icemoon.cdt.meson.core;singleton:=true
+Bundle-Version: 0.0.1.qualifier
+Bundle-Vendor: Emerald Icemoon
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.cdt.core,
+ org.eclipse.cdt.core.cdtvariables,
+ org.eclipse.cdt.core.envvar,
+ org.eclipse.cdt.core.errorparsers,
+ org.eclipse.cdt.core.language.settings.providers,
+ org.eclipse.cdt.core.resources,
+ org.eclipse.cdt.core.settings.model,
+ org.eclipse.cdt.core.settings.model.extension,
+ org.eclipse.cdt.core.settings.model.util,
+ org.eclipse.cdt.managedbuilder.buildproperties,
+ org.eclipse.cdt.managedbuilder.core,
+ org.eclipse.cdt.managedbuilder.envvar,
+ org.eclipse.cdt.managedbuilder.macros,
+ org.eclipse.cdt.managedbuilder.makegen,
+ org.eclipse.cdt.newmake.core,
+ org.eclipse.cdt.ui,
+ org.eclipse.cdt.ui.dialogs,
+ org.eclipse.cdt.ui.newui,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.dialogs,
+ org.eclipse.jface.viewers,
+ org.eclipse.jface.window,
+ org.eclipse.swt,
+ org.eclipse.swt.events,
+ org.eclipse.swt.graphics,
+ org.eclipse.swt.layout,
+ org.eclipse.swt.widgets,
+ org.eclipse.ui.dialogs,
+ org.eclipse.ui.plugin,
+ org.osgi.framework
+Bundle-Activator: org.icemoon.cdt.meson.core.CdtPlugin
+Export-Package: org.icemoon.cdt.meson.core
+Require-Bundle: org.eclipse.ui

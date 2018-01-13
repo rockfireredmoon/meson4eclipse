@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<toc label="Tasks" topic="doc/html/o_tasks.html">
+    <anchor id="meson4cdt_Tasks_Anchor"/>
+    <topic href="doc/html/t_enable_generator.html" label="Enabling buildscript generation through meson"/>
+    <topic href="doc/html/t_meson_options_general.html" label="Adjusting general options for meson">
+    </topic>
+</toc>

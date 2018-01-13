@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests for org.icemoon.meson
+Bundle-SymbolicName: org.icemoon.meson.tests
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Martin Weber
+Fragment-Host: org.icemoon.meson
+Import-Package: org.junit
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+<extension
+       point="org.eclipse.cdt.core.LanguageSettingsProvider">
+    <provider
+          class="org.icemoon.meson.cdt.language.settings.providers.CompileCommandsJsonParser"
+          id="org.icemoon.meson.cdt.language.settings.providers.CompileCommandsJsonParser"
+          name="Meson Compiler Commands Parser"
+          prefer-non-shared="true">
+       <language-scope
+             id="org.eclipse.cdt.core.gcc">
+       </language-scope>
+       <language-scope
+             id="org.eclipse.cdt.core.g++">
+       </language-scope>
+    </provider>
+ </extension>
+ <extension
+       point="org.eclipse.cdt.core.LanguageSettingsProvider">
+    <provider
+          class="org.icemoon.meson.cdt.language.settings.providers.NinjaParser"
+          id="org.icemoon.meson.cdt.language.settings.providers.NinjaParser"
+          name="Ninja Parser"
+          prefer-non-shared="true">
+       <language-scope
+             id="org.eclipse.cdt.core.gcc">
+       </language-scope>
+       <language-scope
+             id="org.eclipse.cdt.core.g++">
+       </language-scope>
+    </provider>
+ </extension>
+ <extension
+       id="CompileCommandsJsonParserMarker"
+       name="Meson Compiler Commands Parser Problem"
+       point="org.eclipse.core.resources.markers">
+	<super type="org.eclipse.core.resources.problemmarker"/>
+ </extension>
+ <extension
+       id="NinjaParserMarker"
+       name="Ninja Parser Problem"
+       point="org.eclipse.core.resources.markers">
+	<super type="org.eclipse.core.resources.problemmarker"/>
+ </extension>
+ <extension
+       point="org.eclipse.cdt.ui.LanguageSettingsProviderAssociation">
+    <class-association
+          class="org.icemoon.meson.cdt.language.settings.providers.CompileCommandsJsonParser"
+          page="org.icemoon.meson.cdt.ui.language.settings.providers.CompileCommandsJsonParserOptionPage">
+    </class-association>
+ </extension>
+ <extension
+       point="org.eclipse.cdt.ui.LanguageSettingsProviderAssociation">
+    <class-association
+          class="org.icemoon.meson.cdt.language.settings.providers.NinjaParser"
+          page="org.icemoon.meson.cdt.ui.language.settings.providers.NinjaParserOptionPage">
+    </class-association>
+ </extension>
+</plugin>

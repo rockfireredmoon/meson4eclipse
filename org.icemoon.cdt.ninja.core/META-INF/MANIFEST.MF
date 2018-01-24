@@ -12,16 +12,13 @@ Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.icemoon.cdt.ninja.core.NinjaPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.cdt.core;bundle-version="5.12.0";visibility:=reexport,
- org.eclipse.cdt.make.core;bundle-version="7.4.0";visibility:=reexport,
- org.eclipse.core.filesystem;bundle-version="1.7.0",
- org.eclipse.jface.text;visibility:=reexport,
- org.eclipse.tools.templates.core;visibility:=reexport,
+ org.eclipse.cdt.core;visibility:=reexport,
+ org.eclipse.core.filesystem,
  org.eclipse.tools.templates.freemarker;visibility:=reexport,
- com.google.gson;bundle-version="2.7.0",
- org.eclipse.cdt.managedbuilder.core;bundle-version="8.6.0";visibility:=reexport,
- org.eclipse.core.resources;bundle-version="3.12.0";visibility:=reexport,
- com.ibm.icu;bundle-version="58.2.0"
+ com.google.gson,
+ org.eclipse.cdt.managedbuilder.core;visibility:=reexport,
+ org.eclipse.core.resources;visibility:=reexport,
+ com.ibm.icu
 Export-Package: org.icemoon.cdt.ninja.core;
   uses:="org.eclipse.tools.templates.freemarker,
    org.eclipse.cdt.make.core.makefile,
@@ -36,7 +33,6 @@ Export-Package: org.icemoon.cdt.ninja.core;
    org.eclipse.core.filesystem,
    org.eclipse.cdt.make.core.makefile.gnu",
  org.icemoon.cdt.ninja.core.corebuild,
- org.icemoon.cdt.ninja.core.internal,
  org.icemoon.cdt.ninja.core.language.settings.providers;
   uses:="org.eclipse.core.runtime,
    org.eclipse.osgi.util,

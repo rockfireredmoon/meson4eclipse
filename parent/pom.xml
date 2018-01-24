@@ -7,7 +7,7 @@
 
 	<groupId>org.icemoon.cdt.meson</groupId>
 	<artifactId>meson-parent</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<url>https://github.com/rockfireredmoon/meson4eclipse</url>
@@ -43,7 +43,7 @@
 	<modules>
 		<module>../releng/org.icemoon.cdt.meson-target</module>
 		<module>../org.icemoon.cdt.meson.ui</module>
-		<module>../org.icemoon.meson.tests</module>
+		
 		<module>../org.icemoon.cdt.meson.core</module>
 		<module>../org.icemoon.cdt.ninja.core</module>
 		<module>../org.icemoon.cdt.ninja.ui</module>
@@ -62,7 +62,7 @@
 
 	<properties>
 		<tycho-version>1.0.0</tycho-version>
-		<platform.version>0.0.1</platform.version>
+		<platform.version>0.0.1-SNAPSHOT</platform.version>
 		<java.source>1.8</java.source>
 	</properties>
 

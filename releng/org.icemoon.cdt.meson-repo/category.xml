@@ -15,9 +15,6 @@
    <bundle id="org.icemoon.cdt.ninja.ui" version="0.0.1.qualifier">
       <category name="meson4eclipse"/>
    </bundle>
-   <bundle id="org.icemoon.meson" version="0.0.1.201801131232">
-      <category name="meson4eclipse"/>
-   </bundle>
    <category-def name="meson4eclipse" label="Meson for Eclipse">
       <description>
          Integrates the Meson cross-platform buildscript generator into Eclipse C/C++ Development Toolkit (CDT).

@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Tests for org.icemoon.meson
-Bundle-SymbolicName: org.icemoon.meson.tests
-Bundle-Version: 0.0.1.qualifier
-Bundle-Vendor: Emerald Icemoon
-Fragment-Host: org.icemoon.cdt.meson.ui
-Import-Package: org.junit
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8

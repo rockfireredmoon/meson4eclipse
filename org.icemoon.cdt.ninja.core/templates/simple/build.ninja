@@ -1,0 +1,23 @@
+# build.ninja
+cc     = g++
+cflags = -Wall
+
+rule compile
+  command = $cc $cflags -c $in -o $out
+ 
+rule link
+  command = $cc $in -o $out
+
+rule rm
+  command = rm $in
+
+build ${projectName}.o: compile ${projectName}.cpp
+
+build ${projectName}: link ${projectName}.o
+
+build all: phony ${projectName}
+
+build clean: rm ${projectName}.o ${projectName}
+
+default ${projectName}
+

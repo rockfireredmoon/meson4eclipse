@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %bundleName
+Bundle-Description: meson4eclipse support for CDT Indexer (include path providers)
+Bundle-Copyright: 2013-2017 Martin Weber, 2018 Emerald Icemoon
+Bundle-SymbolicName: org.icemoon.cdt.ninja.ui;singleton:=true
+Bundle-Version: 0.0.1.qualifier
+Bundle-Vendor: Emerald Icemoon
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.icemoon.cdt.ninja.ui.internal.NinjaUIPlugin
+Require-Bundle: org.icemoon.cdt.ninja.core;bundle-version="0.0.1",
+ org.eclipse.jface.text,
+ org.eclipse.jface;bundle-version="3.13.2",
+ org.eclipse.ui;bundle-version="3.109.0",
+ org.eclipse.cdt.make.ui;bundle-version="7.3.0",
+ org.eclipse.core.runtime;bundle-version="3.13.0",
+ org.eclipse.ui.editors;bundle-version="3.11.0",
+ org.eclipse.core.filesystem;bundle-version="1.7.0",
+ org.eclipse.ui.ide;bundle-version="3.13.1",
+ org.eclipse.tools.templates.ui;bundle-version="1.1.1",
+ org.eclipse.cdt.ui;bundle-version="6.3.0",
+ org.eclipse.cdt.managedbuilder.ui;bundle-version="9.1.0",
+ com.ibm.icu;bundle-version="58.2.0",
+ org.eclipse.ui.views;bundle-version="3.9.0",
+ org.eclipse.cdt.launch,
+ org.eclipse.debug.core;bundle-version="3.11.0",
+ org.eclipse.debug.ui;bundle-version="3.12.50"

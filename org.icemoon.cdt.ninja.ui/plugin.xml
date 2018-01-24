@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+  
+    <extension point="org.eclipse.ui.editors">
+      <editor
+            name="%NinjaEditor.name"
+            icon="icons/etool16/ninja.png"
+            contributorClass="org.icemoon.cdt.ninja.ui.internal.editor.NinjaFileEditorActionContributor"
+            class="org.icemoon.cdt.ninja.ui.internal.editor.NinjaFileEditor"
+            id="org.icemoon.cdt.ninja.editor">
+            <contentTypeBinding contentTypeId="org.icemoon.cdt.ninja.core.ninja"/>
+      </editor>
+   </extension>
+   <extension point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            contentTypeId="org.icemoon.cdt.ninja.core.ninja"
+            class="org.icemoon.cdt.ninja.ui.internal.editor.NinjaDocumentSetupParticipant">
+      </participant>
+   </extension>
+   
+   <extension
+      point="org.eclipse.ui.commands">
+      <category
+            name="%category.source.name"
+            description="%category.source.description"
+            id="org.icemoon.cdt.ninja.ui.category.source">
+      </category>
+      <command
+            name="%ActionDefinition.opendecl.name"
+            categoryId="org.icemoon.cdt.ninja.ui.category.source"
+            description="%ActionDefinition.opendecl.description"
+            id="org.icemoon.cdt.ninja.ui.edit.text.opendecl">
+      </command> 
+      <command
+            name="%ActionDefinition.toggle.comment.name"
+            description="%ActionDefinition.toggle.comment.description"
+            categoryId="org.icemoon.cdt.ninja.ui.category.source"
+            id="org.icemoon.cdt.make.ui.edit.text.toggle.comment">
+      </command>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="%PreferenceNinjaFileEditor.name"
+            category="org.eclipse.cdt.ui.preferences.BuildSettings"
+            class="org.icemoon.cdt.ninja.ui.internal.preferences.NinjaFileEditorPreferencePage"
+            id="org.icemoon.cdt.ninja.ui.preferences.NinjaFileEditorPreferencePage">
+      </page>
+      <page
+            name="%PreferenceNinja.name"
+            category="org.eclipse.cdt.ui.preferences.BuildSettings"
+            class="org.icemoon.cdt.ninja.ui.internal.preferences.NinjaPreferencePage"
+            id="org.icemoon.cdt.ninja.ui.preferences.NinjaPreferencePage">
+      </page>
+      <page
+            name="%PreferenceBuildSettings.name"
+            category="org.eclipse.cdt.ui.preferences.BuildSettings"
+            class="org.icemoon.cdt.ninja.ui.internal.preferences.BuildSettingsPreferencePage"
+            id="org.eclipse.cdt.ui.preferences.BuildSettingProperties">
+      </page>
+   </extension>
+   
+   <!--
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      
+      <page
+            name="%PreferenceMakefileSettings.name"
+            category="org.eclipse.cdt.make.ui.preferences.MakeFileEditorPreferencePage"
+            class="org.eclipse.cdt.make.internal.ui.preferences.MakefileSettingsPreferencePage"
+            id="org.eclipse.cdt.make.ui.preferences.MakefileSettingPreferencePage">
+      </page>
+   </extension>
+   -->
+   
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="org.icemoon.cdt.ninja.ui.internal.NinjaUIPreferenceInitializer"/>
+   </extension>
+   
+   <extension point="org.eclipse.cdt.core.templates">
+      <template
+            id="org.icemoon.cdt.build.core.templates.NinjaHelloWorldCCProject"
+            filterPattern=".*g\+\+"
+            location="$nl$/templates/projecttemplates/NinjaHelloWorldCCProject/template.xml"
+            projectType="org.icemoon.cdt.build.ninja.projectType">
+      </template>
+   </extension>
+
+   <extension
+      point="org.eclipse.cdt.core.templateAssociations">
+      <template
+            id="org.icemoon.cdt.build.core.templates.NinjaHelloWorldCCProject">
+            <toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.solaris.base"/>
+      </template>
+   </extension>
+    
+    <extension
+          point="org.eclipse.cdt.ui.CDTWizard">
+       <wizard
+             class="org.icemoon.cdt.ninja.ui.managed.internal.NinjaBuildWizard"
+             name="%Ninja.wizard.name">meson
+       </wizard>
+    </extension>
+    
+   <extension point="org.eclipse.cdt.ui.LanguageSettingsProviderAssociation">
+      <class-association class="org.icemoon.cdt.ninja.core.language.settings.providers.CompileCommandsJsonParser" page="org.icemoon.cdt.ninja.ui.internal.language.settings.providers.CompileCommandsJsonParserOptionPage" />
+   </extension>
+   
+   <!-- Core build new project wizards -->
+   <extension
+         point="org.eclipse.tools.templates.ui.templates">
+      <tag
+            id="org.icemoon.cdt.ninja.ui.tag"
+            label="Ninja">
+      </tag>
+      <template
+            icon="icons/ninja_logo-main.png"
+            id="org.eclipse.cdt.ninja.ui.newProjectTemplate"
+            label="Ninja Project"
+            wizard="org.icemoon.cdt.ninja.ui.corebuild.internal.NewNinjaProjectWizard">
+         <description>
+            A Ninja project with a Hello World executable to get started.
+         </description>
+         <tagReference
+               id="org.eclipse.cdt.ui.cdtTag">
+         </tagReference>
+         <tagReference
+               id="org.icemoon.cdt.ninja.ui.tag">
+         </tagReference>
+      </template>
+      <template
+            icon="icons/ninja_logo-main.png"
+            id="org.eclipse.cdt.ninja.ui.emptyProjectTemplate"
+            label="Empty or Existing Ninja Project"
+            wizard="org.icemoon.cdt.ninja.ui.corebuild.internal.EmptyNinjaProjectWizard">
+         <description>
+            Create a Ninja project with no files. Can be used to create one over existing content.
+         </description>
+         <tagReference
+               id="org.eclipse.cdt.ui.cdtTag">
+         </tagReference>
+         <tagReference
+               id="org.icemoon.cdt.ninja.ui.tag">
+         </tagReference>
+      </template>
+   </extension>
+   
+
+   <extension
+         point="org.eclipse.ui.propertyPages">
+   
+    	<page
+            class="org.icemoon.cdt.ninja.ui.internal.preferences.NinjaPropertyPage"
+            id="org.eclipse.cdt.autotools.ui.propertypage"
+            name="%PropertyNinja.name">
+          <filter
+               name="projectNature"
+               value="org.icemoon.cdt.ninja.core.ninjaNature">
+          </filter>
+          <enabledWhen>
+             <or>
+		       <instanceof value="org.eclipse.core.resources.IProject"/>
+		       <instanceof value="org.eclipse.cdt.core.model.ICProject"/>
+		     </or>
+          </enabledWhen>
+       </page>
+       
+   </extension>
+   
+   <extension
+         point="org.eclipse.cdt.launch.coreBuildTab">
+      <provider
+            nature="org.icemoon.cdt.ninja.core.ninjaNature"
+            tabClass="org.icemoon.cdt.ninja.ui.internal.preferences.NinjaBuildTab">
+      </provider>
+   </extension>
+</plugin>
+

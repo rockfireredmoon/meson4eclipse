@@ -5,13 +5,12 @@
   <parent>
     <groupId>org.icemoon.cdt.meson</groupId>
     <artifactId>meson-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <relativePath>../../parent</relativePath>
   </parent>
 
   <artifactId>org.icemoon.cdt.meson-target</artifactId>
-  <version>1.0.1</version>
   <packaging>eclipse-target-definition</packaging>
 
-  <name>Target definition CDT/8.1.0 Eclipse/3.8.0 (Juno)</name>
+  <name>Target definition CDT/8.1.0 Eclipse/4.6.0 (Neon)</name>
 </project>

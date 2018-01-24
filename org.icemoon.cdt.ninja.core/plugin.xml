@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+  
+   <extension
+         id="ninjaNature"
+         name="%ninjaMake.name"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="org.icemoon.cdt.ninja.core.NinjaProjectNature">
+         </run>
+      </runtime>
+      
+   <!--
+      <builder
+            id="org.eclipse.cdt.ninja.core.ninjaBuilder">
+      </builder>
+      -->
+   </extension>
+   
+   <!--
+	<extension
+         id="ninjaBuilder"
+         name="%builderNinja.name"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="false"
+            isConfigurable="true">
+         <run class="org.eclipse.cdt.make.core.MakeBuilder">
+            <parameter
+                  name="defaultCommand"
+                  value="ninja">
+            </parameter>
+         </run>
+      </builder>
+   </extension>
+   -->
+   
+     
+   
+	<extension
+         point="org.eclipse.cdt.make.core.MakeTargetBuilder">
+      <builder
+            builderID="org.icemoon.cdt.nija.core.ninjaTargetBuilder"
+            id="org.icemoon.cdt.ninja.MakeTargetBuilder">
+      </builder>
+   </extension>
+
+   <extension id="org.icemoon.cdt.ninja.core.managed.build.info"
+         name="Ninja Build Info" point="org.eclipse.cdt.managedbuilder.core.buildDefinitions">
+      <managedBuildRevision fileVersion="4.0.0" />
+      <builder
+            autoBuildTarget="all"
+            buildRunner="org.icemoon.cdt.ninja.core.managed.internal.NinjaBuildRunner"
+            cleanBuildTarget="clean"
+            command="ninja"
+            buildfileGenerator="org.icemoon.cdt.ninja.core.managed.internal.NinjaFileGenerator"
+            id="org.icemoon.cdt.ninja.core.genscriptbuilder"
+            ignoreErrCmd="-w dupbuild=warn"
+            incrementalBuildTarget="all"
+            name="Ninja Builder"/>
+      			
+      			<!-- projectType 
+            buildArtefactType="org.eclipse.linuxtools.cdt.autotools.core.buildArtefactType.autotools"
+            -->
+            
+    	<tool
+		    command="ninja"
+		    id="org.icemoon.cdt.ninja.core.tool.ninja"
+		    isAbstract="false"
+		    name="Ninja"
+		    natureFilter="both"
+		    supportsManagedBuild="true"
+		    >
+		    
+            <supportedProperties>
+            <property id="org.eclipse.cdt.build.core.buildArtefactType">
+	            <value id="org.eclipse.cdt.build.core.buildArtefactType.exe"/>
+    	        <value id="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"/>
+            </property>
+            </supportedProperties>
+         <outputType
+			outputs=""
+            buildVariable="EXECUTABLES"
+            nameProvider="org.icemoon.cdt.ninja.core.managed.internal.NinjaOutputNameProvider"
+            multipleOfType="true"
+            id="org.icemoon.cdt.ninja.core.outputType.exe">
+         </outputType>
+         <outputType
+		    outputs="so"
+			outputPrefix="lib"
+            multipleOfType="true"
+            nameProvider="org.icemoon.cdt.ninja.core.managed.internal.NinjaOutputNameProvider"
+			buildVariable="LIBRARIES"
+			id="org.icemoon.cdt.ninja.core.outputType.so">
+		 </outputType>
+         
+         <inputType
+               id="org.icemoon.cdt.ninja.core.inputType.ninja"
+               multipleOfType="false"
+               sourceContentType="org.icemoon.cdt.ninja.core.ninja">
+         </inputType>
+      </tool>
+   </extension>
+   
+   <extension point="org.eclipse.core.contenttype.contentTypes">
+      <!-- declares a content type for Makefile files -->
+      <content-type id="ninja" name="%ninja" 
+          base-type="org.eclipse.core.runtime.text"
+          priority="high"/>
+   </extension>
+   
+   <extension point="org.eclipse.core.contenttype.contentTypes">
+      <file-association 
+          content-type="org.icemoon.cdt.ninja.core.ninja"
+          file-names="build.ninja"
+          file-extensions="ninja"/>
+   </extension>
+   
+    <extension
+           id="ninjaProperties"
+           name="Ninja Build Properties"
+           point="org.eclipse.cdt.managedbuilder.core.buildProperties">
+           <propertyValue 
+            	property="org.eclipse.cdt.build.core.buildArtefactType" 
+            	id="org.icemoon.cdt.ninja.core.buildArtefactType.ninja" 
+            	name="%BuildProperty.type.name.ninja"/>
+     </extension> 
+   
+	<extension
+	      point="org.eclipse.cdt.core.templateAssociations">
+	      <template
+	            id="org.eclipse.cdt.build.core.templates.NinjaHelloWorldCCProject">
+	            <toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base"/>
+	            <toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.base"/>
+	            <toolChain id="cdt.managedbuild.toolchain.gnu.base"/>
+	            <toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base"/>
+	            <toolChain id="cdt.managedbuild.toolchain.gnu.solaris.base"/>
+	      </template>
+	</extension>
+	
+	<extension
+	      point="org.eclipse.cdt.core.templateProcessTypes">
+	   <processType
+	         name="NinjaGenerator"
+	         processRunner="org.icemoon.cdt.ninja.core.managed.NinjaGenerator">
+	      <simple
+	            name="projectName">
+	      </simple>
+	   </processType>
+	</extension>
+	
+   <extension point="org.eclipse.cdt.core.LanguageSettingsProvider">
+      <provider class="org.icemoon.cdt.ninja.core.language.settings.providers.CompileCommandsJsonParser" id="org.icemoon.cdt.ninja.core.language.settings.providers.CompileCommandsJsonParser" name="Ninja Compile Commands Parser" prefer-non-shared="true">
+         <language-scope id="org.eclipse.cdt.core.gcc" />
+         <language-scope id="org.eclipse.cdt.core.g++" />
+      </provider>
+   </extension>
+   
+   <extension id="CompileCommandsJsonParserMarker" name="Ninja Compiler Commands Parser Problem" point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker" />
+   </extension>
+
+   <extension
+         point="org.eclipse.cdt.core.buildConfigProvider">
+      <provider
+            class="org.icemoon.cdt.ninja.core.corebuild.internal.NinjaBuildConfigurationProvider"
+            id="org.icemoon.cdt.ninja.core.provider"
+            natureId="org.icemoon.cdt.ninja.core.ninjaNature">
+      </provider>
+   </extension>
+   
+</plugin>
+

@@ -1,0 +1,2 @@
+project($(projectName), 'c')
+executable($(projectName), '$(sourceDir)/$(projectName).c')

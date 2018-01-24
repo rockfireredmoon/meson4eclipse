@@ -1,0 +1,4 @@
+<templateManifest>
+	<file src="/templates/empty-meson/meson.build"
+		dest="/${projectName}/meson.build"/>
+</templateManifest>

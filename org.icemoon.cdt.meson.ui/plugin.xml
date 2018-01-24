@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <!--
+   <extension point="org.eclipse.core.contenttype.contentTypes">
+      <content-type id="meson" name="%meson" base-type="org.eclipse.core.runtime.text" priority="high" />
+   </extension>
+   <extension point="org.eclipse.core.contenttype.contentTypes">
+      <file-association content-type="org.eclipse.cdt.make.core.makefile" file-names="meson.build" />
+   </extension>
+   -->
+   <!-- project settings UI   -->
+   <extension point="org.eclipse.ui.preferencePages">
+      <page category="org.eclipse.cdt.ui.preferences.CPluginPreferencePage" class="org.icemoon.cdt.meson.ui.internal.MesonPreferencePage" id="org.eclipse.cdt.meson.ui.page1" name="%meson.preferences.name" />
+   </extension>
+   
+   
+   <!-- Core build new project wizards -->
+   <extension
+         point="org.eclipse.tools.templates.ui.templates">
+      <tag id="org.icemoon.cdt.meson.ui.tag" label="Meson"></tag>
+      <template
+            icon="icons/meson_48.png"
+            id="org.eclipse.cdt.meson.ui.newProjectTemplate"
+            label="Meson Project"
+            wizard="org.icemoon.cdt.meson.ui.corebuild.internal.NewMesonProjectWizard">
+         <description>%mesonTemplate.description</description>
+         <tagReference id="org.eclipse.cdt.ui.cdtTag">
+         </tagReference>
+         <tagReference id="org.icemoon.cdt.meson.ui.tag">
+         </tagReference>
+      </template>
+      <template
+            icon="icons/meson_48.png"
+            id="org.eclipse.cdt.meson.ui.emptyProjectTemplate"
+            label="Empty or Existing Meson Project"
+            wizard="org.icemoon.cdt.meson.ui.corebuild.internal.EmptyMesonProjectWizard">
+         <description>%emptyMesonTemplate.description</description>
+         <tagReference id="org.eclipse.cdt.ui.cdtTag"></tagReference>
+         <tagReference id="org.icemoon.cdt.meson.ui.tag"></tagReference>
+      </template>
+   </extension>
+   
+   
+    <extension
+          point="org.eclipse.cdt.core.templates">
+       <template
+             id="org.icemoon.cdt.meson.ui.template.emptyProject"
+             location="templates/projecttemplates/EmptyProject/template.xml"
+             projectType="org.icemoon.cdt.meson.core.projectType">
+       </template>
+       <template
+             filterPattern=".*gcc"
+             id="org.icemoon.cdt.meson.ui.template.helloWorldCProject"
+             location="templates/projecttemplates/HelloWorldCMesonProject/template.xml"
+             projectType="org.icemoon.cdt.meson.core.projectType">
+       </template>
+       <template
+             filterPattern=".*g\+\+"
+             id="org.icemoon.cdt.meson.ui.template.helloWorldCPPProject"
+             location="templates/projecttemplates/HelloWorldCPPMesonProject/template.xml"
+             projectType="org.icemoon.cdt.meson.core.projectType">
+       </template>
+       <template
+             id="org.icemoon.cdt.meson.ui.template.mesonSharedLibraryProject"
+             location="templates/projecttemplates/MesonSharedLibraryProject/template.xml"
+             projectType="org.icemoon.cdt.meson.core.projectType">
+       </template>
+    </extension>
+   
+   <extension point="org.eclipse.ui.propertyPages">
+      <page class="org.icemoon.cdt.meson.ui.internal.MesonPropertyPage" id="org.icemoon.cdt.meson.ui.MesonPropertyPage" name="Meson">
+         <enabledWhen>
+            <adapt type="org.eclipse.core.resources.IProject">
+               <test property="org.eclipse.core.resources.projectNature" value="org.icemoon.cdt.meson.core.mesonNature" />
+            </adapt>
+         </enabledWhen>
+         <keywordReference id="org.icemoon.cdt.meson.core.keyword.meson" />
+         <keywordReference id="org.icemoon.cdt.meson.core.keyword.cdt" />
+      </page>
+      <page category="org.icemoon.cdt.meson.ui.MesonPropertyPage" class="org.icemoon.cdt.meson.ui.internal.HostOSPropertyPage" id="org.icemoon.cdt.meson.ui.HostOSPropertyPage" name="Host OS overrides">
+         <enabledWhen>
+            <adapt type="org.eclipse.core.resources.IProject">
+               <test property="org.eclipse.core.resources.projectNature" value="org.icemoon.cdt.meson.core.mesonNature" />
+            </adapt>
+         </enabledWhen>
+      </page>
+   </extension>
+
+   <extension point="org.eclipse.cdt.ui.cPropertyTab">
+      <tab class="org.icemoon.cdt.meson.ui.internal.MesonPropertyTab" helpId="org.icemoon.cdt.meson.core.t_meson_options_general" name="&amp;General" parent="org.icemoon.cdt.meson.ui.internal.MesonPropertyPage" tooltip="Properties applied under each OS" />
+      <tab class="org.icemoon.cdt.meson.ui.internal.MesonProjectOptionsTab" helpId="org.icemoon.cdt.meson.core.t_meson_project_options_general" name="%ProjectOptions" parent="org.icemoon.cdt.meson.ui.internal.MesonPropertyPage" tooltip="Applied under each OS" />
+      <tab class="org.icemoon.cdt.meson.ui.internal.MesonAdvancedTab" helpId="org.icemoon.cdt.meson.core.t_meson_options_advanced" name="&amp;Advanced" parent="org.icemoon.cdt.meson.ui.internal.MesonPropertyPage" tooltip="Advanced properties applied under each OS" />
+      <tab class="org.icemoon.cdt.meson.ui.internal.LinuxPropertyTab" helpId="org.icemoon.cdt.meson.core.t_meson_options_OS" name="&amp;Linux/default" parent="org.icemoon.cdt.meson.ui.internal.HostOSPropertyPage" tooltip="Properties applied under Linux or unknown OS" weight="10" />
+      <tab class="org.icemoon.cdt.meson.ui.internal.MacOSXPropertyTab" helpId="org.icemoon.cdt.meson.core.t_meson_options_OS" name="&amp;Mac OS X" parent="org.icemoon.cdt.meson.ui.internal.HostOSPropertyPage" tooltip="Properties applied under Mac OS X" weight="50" />
+      <tab class="org.icemoon.cdt.meson.ui.internal.WindowsPropertyTab" helpId="org.icemoon.cdt.meson.core.t_meson_options_OS" name="&amp;Windows" parent="org.icemoon.cdt.meson.ui.internal.HostOSPropertyPage" tooltip="Properties applied under windows" weight="80" />
+   </extension>
+   <extension point="org.eclipse.ui.keywords">
+      <keyword id="org.icemoon.cdt.meson.core.keyword.cdt" label="cdt" />
+      <keyword id="org.icemoon.cdt.meson.core.keyword.meson" label="meson" />
+   </extension>
+</plugin>
+

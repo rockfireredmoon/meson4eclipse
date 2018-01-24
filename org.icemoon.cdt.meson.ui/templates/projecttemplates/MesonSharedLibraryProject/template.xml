@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<template type="ProjTempl" version="1.0" supplier="Eclipse.org" revision="1.0" author="Intel Corporation"
+		copyright="Copyright (c) 2011 Red Hat, Inc. All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html"
+		id="MesonSharedLibraryProject" label="%MesonSharedLibrary.template.label" description="%MesonSharedLibrary.template.description"
+		 help="help.html">
+
+	<property-group id="basics" label="%MesonSharedLibrary.basics.label" description="%MesonSharedLibrary.basics.description" type="PAGES-ONLY" help="help.html">
+		<property id="author"
+			label="%MesonSharedLibrary.author.label"
+			description="%MesonSharedLibrary.author.description"
+			type="input"
+			pattern=".*"
+			default=""
+			hidden="false"
+			persist="true"/>
+		<property id="copyright"
+			label="%MesonSharedLibrary.copyright.label"
+			description="%MesonSharedLibrary.copyright.description"
+			type="input"
+			pattern=".*"
+			default="%MesonSharedLibrary.copyright.default"
+			hidden="false"
+			persist="true"/>
+		<property id="libName"
+			label="%MesonSharedLibrary.libName.label"
+			description="%MesonSharedLibrary.libName.description"
+			type="input"
+			default="%MesonSharedLibrary.libName.default"
+			pattern="[a-zA-Z0-9]+"
+			mandatory="false"
+			persist="true"/>
+	</property-group>
+
+	<process type="org.icemoon.cdt.meson.core.managed.NewMesonProject">
+		<simple name="name" value="$(projectName)" /> 
+		<simple name="artifactExtension" value="exe" />
+		<simple name="isCProject" value="true" />
+	</process>
+
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name="path" value="$(libName)"/>
+	</process>
+
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name="path" value="TestProgram"/>
+	</process>
+
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name="path" value="include"/>
+	</process>
+
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name="path" value="m4"/>
+	</process>
+
+	<process type="org.eclipse.cdt.core.AddFiles">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="files">
+			<element>
+				<simple name="source" value="libExample/libExample.c"/>
+				<simple name="target" value="$(libName)/$(libName).c"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="meson.build"/>
+				<simple name="target" value="meson.build"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="exampleProgram/exampleProgram.c"/>
+				<simple name="target" value="exampleProgram/exampleProgram.c"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="libExample/libExample.c"/>
+				<simple name="target" value="$(libName)/$(libName).c"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="include/Makefile.am"/>
+				<simple name="target" value="include/Makefile.am"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="include/libExample.h"/>
+				<simple name="target" value="include/$(libName).h"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+		</complex-array>
+	</process>
+	<process type="org.eclipse.cdt.ui.OpenFiles">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="files">
+			<element>
+				<simple name="target" value="$(libName)/$(libName).c"/>
+			</element>
+		</complex-array>
+	</process>
+	
+
+</template>
+

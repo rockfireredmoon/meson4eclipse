@@ -1,0 +1,7 @@
+<templateManifest>
+	<file src="/templates/simple/build.ninja"
+		dest="/${projectName}/build.ninja"/>
+	<file src="/templates/simple/main.cpp"
+		dest="/${projectName}/${projectName}.cpp"
+		open="true"/>
+</templateManifest>

@@ -5,7 +5,7 @@
 
 # Introduction
 The [Meson Wiki](http://mesonbuild.com/IDE-integration.html) mentions the options to use Meson with an IDE.
-This Eclipse plugin extends the CDT (C/C++ Development Tools) to generate Meson meta-data, extract project settings and invoke builds. It is heavily based on [cmake4eclipse](https://github.com/15knots/cmake4eclipse), as in many ways the behaviour is similar.
+This Eclipse plugin extends the CDT (C/C++ Development Tools) to generate Meson meta-data, extract project settings and invoke builds. It is based on a cross between [cmake4eclipse](https://github.com/15knots/cmake4eclipse), the CMake CDT plugin and various other CDT components.
 
 # Why meson4eclipse?
 When using Eclipse with a Meson project, without integration setup has to at best be duplicated in the project settings. Your builds will be inefficient, and things are worse when working in a team, with everyone having to setup their own projects leading to all kinds of possibile issues!
@@ -13,8 +13,17 @@ When using Eclipse with a Meson project, without integration setup has to at bes
 Using Meson and Meson4Eclipse, means you can have a single meson.build file in your SCM, and everyone's projects will be setup and built in the same way.
 
 # Quick start
- 1. If you do not have any existing code, check out the [Sample Projects](https://github.com/rockfireredmoon/meson4ecipse-sample-projects), chose one and fill in your code (TODO).
- 1. If you have an existing C/C++ project code, inside Eclipse, goto `Help:Help Contents`, then read the `CMake for CDT User Guide:Getting Started` node to adjust your project settings (TODO).
+ 1. Install as described below.
+ 1. Use one of the new C++ Project Wizards to either create a sample Meson project or add the Meson nature to an existing project using the Empty project wizard.
+
+# Features
+
+ * Makes use of CDT Core Build to provide simple integration for full builds, incremental builds and cleaning.
+ * Meson syntax error markers.
+ * Eclipse feature includes a Ninja editor too. You can also create raw Ninja projects if you are so inclined. This is OK for VERY small projects.
+ * New project wizards for both Meson and Ninja 
+ * WIP - Work has started on a managed build versions of both Meson and Ninja.
+
  
 ## License
 The plugin is licensed under the <a href="http://www.eclipse.org/legal/epl-v10.html">Eclipse Public License Version 1.0 ("EPL")</a>.
@@ -39,7 +48,7 @@ There is a run configuration for eclipse to invoke maven `build meson4eclipse` p
 # Release History
 ## 0.0.1 (2018-1-12)
 #### System Requirements
- CDT v 8.1.0 or higher and Eclipse v 3.8.0 (Juno) or higher
+ Java 8, CDT v 8.1.0 or higher and Eclipse v 4.6.0 (Neon) or higher
 
 ---
 

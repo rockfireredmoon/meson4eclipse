@@ -314,6 +314,8 @@ public class MesonHelper {
 			args.add("--buildtype="
 					+ (prefs.getBuildType() == null ? "debug" : prefs.getBuildType().name().toLowerCase()));
 
+			args.add("--layout=" + prefs.getLayout().name().toLowerCase());
+			
 			/* add general settings */
 			if (prefs.isStrip())
 				args.add("--strip");

@@ -9,6 +9,6 @@
   </properties>
   <children size='3'>
     <child
-      location='jar:https://dl.bintray.com/emerald-icemoon/eclipse/meson4eclipse-0.0.1-SNAPSHOT.zip!/' />
+      location='jar:https://dl.bintray.com/emerald-icemoon/eclipse/meson4eclipse-0.9.0-SNAPSHOT.zip!/' />
   </children>
 </repository>

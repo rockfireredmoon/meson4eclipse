@@ -127,7 +127,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <import plugin="org.eclipse.ui.ide" version="3.12.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.filesystem"/>
-      <import plugin="org.icemoon.cdt.ninja.core" version="0.0.1" match="greaterOrEqual"/>
+      <import plugin="org.icemoon.cdt.ninja.core" version="0.9.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.cdt.make.ui" version="7.3.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.editors" version="3.10.0" match="greaterOrEqual"/>
@@ -141,35 +141,35 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <import plugin="org.eclipse.core.jobs"/>
       <import plugin="org.eclipse.equinox.preferences"/>
       <import plugin="org.eclipse.tools.templates.core"/>
-      <import plugin="org.icemoon.cdt.meson.core" version="0.0.1" match="greaterOrEqual"/>
+      <import plugin="org.icemoon.cdt.meson.core" version="0.9.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
          id="org.icemoon.cdt.meson.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.9.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.icemoon.cdt.meson.ui"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.9.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.icemoon.cdt.ninja.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.9.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.icemoon.cdt.ninja.ui"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.9.0.qualifier"
          unpack="false"/>
 
 </feature>

@@ -179,14 +179,13 @@ public class NinjaBuildConfiguration extends CBuildConfiguration {
 
 	protected int watchProcess(Process process, IConsoleParser[] consoleParsers, IConsole console,
 			IProgressMonitor progress) throws CoreException {
-		Thread t = Thread.currentThread();
 		Thread mon = new Thread() {
 			public void run() {
 				try {
 					while (!progress.isCanceled()) {
 						Thread.sleep(500);
 					}
-					t.interrupt();
+					process.destroy();
 				} catch (InterruptedException ie) {
 				}
 			}

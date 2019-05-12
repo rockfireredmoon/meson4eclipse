@@ -80,6 +80,9 @@ public abstract class AbstractOsPreferences {
 		final String os = Platform.getOS();
 		if (Platform.OS_WIN32.equals(os)) {
 			return prefs.getWindowsPreferences();
+		}
+		else if (Platform.OS_MACOSX.equals(os)) {
+			return prefs.getMacOSXPreferences();
 		} else {
 			// fall back to linux, if OS is unknown
 			return prefs.getLinuxPreferences();

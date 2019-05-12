@@ -313,13 +313,11 @@ public class MesonAdvancedTab extends QuirklessAbstractCPropertyTab {
 						.getItems();
 
 				for (int i = 0; i < prefs.length; i++) {
-					ICStorageElement storage = cfgs[i].getStorage(MesonPreferences.CFG_STORAGE_ID, true);
-					prefs[i].saveToStorage(storage);
+					ConfigurationManager.getInstance().save(cfgs[i], prefs[i]);
 				}
 			} else {
 				// we are editing a single configuration...
-				ICStorageElement storage = cfgd.getStorage(MesonPreferences.CFG_STORAGE_ID, true);
-				prefs[0].saveToStorage(storage);
+				ConfigurationManager.getInstance().save(cfgd, prefs[0]);
 			}
 		} catch (CoreException ex) {
 			log.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, null, ex));
@@ -427,6 +425,7 @@ public class MesonAdvancedTab extends QuirklessAbstractCPropertyTab {
 			b_unity.setSelection(
 					new StructuredSelection(pref.getUnity() == null ? MesonUnity.DEFAULT : pref.getUnity()), true);
 			enterToggleMode(b_stdSplit, pref.isStdSplit());
+			enterToggleMode(b_stripTargets, pref.isStrip());
 		}
 
 		b_layout.getCombo().setEnabled(layoutEditable);

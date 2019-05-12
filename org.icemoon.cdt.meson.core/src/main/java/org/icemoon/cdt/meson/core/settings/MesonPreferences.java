@@ -14,6 +14,8 @@ package org.icemoon.cdt.meson.core.settings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.icemoon.cdt.meson.core.Activator;
@@ -48,6 +50,8 @@ public class MesonPreferences {
 	/**  */
 	private static final String ELEM_OPTIONS = "options";
 	private static final String ATTR_BUILD_DIR = "buildDir";
+	private static final String ATTR_SERIAL = "serial";
+	private static final String ATTR_STAMP = "stamp";
 
 	private boolean strip, stdSplit, werror;
 	private int warnLevel;
@@ -63,6 +67,8 @@ public class MesonPreferences {
 	private MacOSXPreferences macOSXPreferences = new MacOSXPreferences();
 	private MesonUnity unity;
 	private boolean errorLogs;
+	private UUID serial;
+	private UUID stamp;
 
 	/**
 	 * Creates a new object, initialized with all default values.
@@ -86,8 +92,22 @@ public class MesonPreferences {
 		layout = MesonLayout.MIRROR;
 		unity = MesonUnity.OFF;
 		errorLogs = true;
+		serial = null;
+		stamp = null;
 		// linuxPreferences.reset();
 		// windowsPreferences.reset();
+	}
+	
+	public boolean isNeedsReconfigure() {
+		return serial == null || !Objects.equals(serial, stamp);
+	}
+	
+	public void needsReconfigure() {
+		stamp = UUID.randomUUID();
+	}
+	
+	public void reconfigured() {
+		serial = stamp;
 	}
 
 	/**
@@ -136,6 +156,8 @@ public class MesonPreferences {
 				stdSplit = Boolean.parseBoolean(child.getAttribute(ATTR_STD_SPLIT));
 				werror = Boolean.parseBoolean(child.getAttribute(ATTR_WERROR));
 				buildDirectory = parent.getAttribute(ATTR_BUILD_DIR);
+				serial =  parent.getAttribute(ATTR_SERIAL) == null ? null : UUID.fromString(parent.getAttribute(ATTR_SERIAL));
+				stamp =  parent.getAttribute(ATTR_STAMP) == null ? null : UUID.fromString(parent.getAttribute(ATTR_STAMP));
 			} else if (ELEM_PROJECT_OPTIONS.equals(child.getName())) {
 				// projectOptions...
 				Util.deserializeCollection(projectOptions, new ProjectOptionSerializer(), child);
@@ -206,6 +228,16 @@ public class MesonPreferences {
 			parent.setAttribute(ATTR_BUILD_DIR, buildDirectory);
 		} else {
 			parent.removeAttribute(ATTR_BUILD_DIR);
+		}
+		if (serial != null) {
+			parent.setAttribute(ATTR_SERIAL, serial.toString());
+		} else {
+			parent.removeAttribute(ATTR_SERIAL);
+		}
+		if (stamp != null) {
+			parent.setAttribute(ATTR_STAMP, stamp.toString());
+		} else {
+			parent.removeAttribute(ATTR_STAMP);
 		}
 
 		// projectOptions...

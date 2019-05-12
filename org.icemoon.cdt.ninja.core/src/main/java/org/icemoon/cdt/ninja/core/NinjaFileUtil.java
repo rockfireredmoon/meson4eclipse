@@ -12,15 +12,37 @@
  *******************************************************************************/
 package org.icemoon.cdt.ninja.core;
 
-import org.icemoon.cdt.ninja.core.internal.PosixMakefileUtil;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.icemoon.cdt.ninja.core.internal.Util;
 
 /**
  * NinjaFile
  */
-public class NinjaFileUtil extends PosixMakefileUtil {
+public class NinjaFileUtil  {
 	public static boolean isIncluded(String line) {
 		return isSubninja(line) || isInclude(line);
+	}
+
+	public static String[] findPrerequisites(String line) {
+		return findTargets(line);
+	}
+
+	public static String[] findTargets(String line) {
+		List<String> aList = new ArrayList<String>();
+		int space;
+		// Trim away trailing and prepending spaces.
+		line = line.trim();
+		while ((space = Util.indexOf(line, " \t")) != -1) { //$NON-NLS-1$
+			aList.add(line.substring(0, space).trim());
+			line = line.substring(space + 1).trim();
+		}
+		// The last target.
+		if (line.length() > 0) {
+			aList.add(line);
+		}
+		return aList.toArray(new String[0]);
 	}
 
 	public static boolean isInclude(String line) {

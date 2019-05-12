@@ -912,7 +912,7 @@ public class MesonGenerator2 implements IManagedBuilderMakefileGenerator2, IMeso
 
 	@Override
 	public String getMakefileName() {
-		return "meson.build";
+		return MESONBUILDFILE_NAME;
 	}
 
 	/**

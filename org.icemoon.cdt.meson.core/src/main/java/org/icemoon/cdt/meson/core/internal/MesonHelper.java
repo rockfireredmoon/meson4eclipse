@@ -4,9 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,8 +25,11 @@ import org.eclipse.cdt.core.cdtvariables.ICdtVariableManager;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
+import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.utils.Platform;
@@ -58,7 +65,6 @@ public class MesonHelper {
 	/** buildscript generation error marker ID */
 	private static final String MARKER_ID = Activator.PLUGIN_ID + ".BuildscriptGenerationError";
 
-	private ICConfigurationDescription cfgd;
 	private IConfiguration config;
 	private IProject project;
 	private IToolChain toolChain;
@@ -67,7 +73,7 @@ public class MesonHelper {
 	private IMesonCrossCompileFile crossCompileFile;
 
 	public MesonHelper(String configName, ICommandLauncher launcher, IMesonCrossCompileFile crossCompileFile,
-			IToolChain toolChain, IProject project, ICConfigurationDescription cfgd, IConfiguration config) {
+			IToolChain toolChain, IProject project, IConfiguration config) {
 
 		if (launcher == null) {
 			launcher = CommandLauncherManager.getInstance().getCommandLauncher(project);
@@ -76,12 +82,22 @@ public class MesonHelper {
 		}
 
 		this.launcher = launcher;
-		this.cfgd = cfgd;
 		this.crossCompileFile = crossCompileFile;
 		this.toolChain = toolChain;
 		this.configName = configName;
 		this.project = project;
 		this.config = config;
+	}
+
+	public ICConfigurationDescription getConfigurationDescription(boolean write) {
+		ICProjectDescription projDes = CoreModel.getDefault().getProjectDescription(project, write);
+		ICConfigurationDescription[] cfgs = projDes.getConfigurations();
+		// TODO
+		return cfgs[0];
+	}
+
+	public MesonPreferences getMesonPreferences() throws CoreException {
+		return ConfigurationManager.getInstance().getOrLoad(getConfigurationDescription(false));
 	}
 
 	public String getBuildArguments(String arguments) throws CoreException {
@@ -108,7 +124,7 @@ public class MesonHelper {
 	}
 
 	private String getBuildScriptCommand() throws CoreException {
-		MesonPreferences prefs = ConfigurationManager.getInstance().getOrLoad(cfgd);
+		MesonPreferences prefs = ConfigurationManager.getInstance().getOrLoad(getConfigurationDescription(false));
 		final AbstractOsPreferences osPrefs = AbstractOsPreferences.extractOsPreferences(prefs);
 		MesonBackend backend = getBackend();
 		String prefCmd = osPrefs.getBuildscriptProcessorCommand();
@@ -119,7 +135,7 @@ public class MesonHelper {
 
 	public MesonBackend getBackend() throws CoreException {
 
-		MesonPreferences prefs = ConfigurationManager.getInstance().getOrLoad(cfgd);
+		MesonPreferences prefs = ConfigurationManager.getInstance().getOrLoad(getConfigurationDescription(false));
 		final AbstractOsPreferences osPrefs = AbstractOsPreferences.extractOsPreferences(prefs);
 
 		MesonBackend backend = osPrefs.getBackend();
@@ -128,7 +144,7 @@ public class MesonHelper {
 			// If garbled, make sure
 			// org.icemoon.cdt.meson.core.internal.BuildscriptGenerator.getBuildWorkingDir()
 			// returns a full, absolute path relative to the workspace.
-			final IPath builderCWD = cfgd.getBuildSetting().getBuilderCWD();
+			final IPath builderCWD = getConfigurationDescription(false).getBuildSetting().getBuilderCWD();
 			IFolder cwd = ResourcesPlugin.getWorkspace().getRoot().getFolder(builderCWD);
 
 			IPath location = cwd.getLocation();
@@ -150,7 +166,7 @@ public class MesonHelper {
 		// set the top build dir path for the current configuration
 		String buildDirStr = null;
 		try {
-			MesonPreferences prefs = ConfigurationManager.getInstance().getOrLoad(cfgd);
+			MesonPreferences prefs = ConfigurationManager.getInstance().getOrLoad(getConfigurationDescription(false));
 			buildDirStr = prefs.getBuildDirectory();
 		} catch (CoreException e) {
 			// storage base is null; treat as bug in CDT..
@@ -174,7 +190,7 @@ public class MesonHelper {
 		ICdtVariableManager mngr = CCorePlugin.getDefault().getCdtVariableManager();
 		try {
 			String buildPathString = buildP.toString();
-			buildPathString = mngr.resolveValue(buildPathString, "", "", cfgd);
+			buildPathString = mngr.resolveValue(buildPathString, "", "", getConfigurationDescription(false));
 			buildP = new Path(buildPathString);
 		} catch (CdtVariableException e) {
 			log.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "variable expansion for build directory failed", e));
@@ -191,7 +207,7 @@ public class MesonHelper {
 		checkCancel(monitor);
 
 		final IFolder buildFolder = getBuildFolder();
-		if (buildFolder.exists()) {
+		if (buildFolder.exists() && !getMesonPreferences().isNeedsReconfigure()) {
 			buildFolder.delete(true, monitor);
 			project.refreshLocal(IResource.DEPTH_ZERO, monitor);
 		}
@@ -203,7 +219,7 @@ public class MesonHelper {
 		try {
 			final ConsoleOutputStream cis = console.getInfoStream();
 			cis.write(SimpleDateFormat.getTimeInstance().format(new Date()).getBytes());
-			cis.write(" Buildscript generation: ".getBytes());
+			cis.write((" Buildscript (meson " + getMesonVersion() + ") generation: ").getBytes());
 			cis.write(project.getName().getBytes());
 			cis.write("::".getBytes());
 			cis.write(configName.getBytes());
@@ -215,7 +231,17 @@ public class MesonHelper {
 
 		checkCancel(monitor);
 
-		return invokeMeson(buildFolder.getLocation(), console, monitor);
+		try {
+			return invokeMeson(buildFolder.getLocation(), console, monitor);
+		} finally {
+
+			ICConfigurationDescription cfg = getConfigurationDescription(true);
+			MesonPreferences pref = new MesonPreferences();
+			ICStorageElement storage = cfg.getStorage(MesonPreferences.CFG_STORAGE_ID, true);
+			pref.loadFromStorage(storage);
+			pref.reconfigured();
+			ConfigurationManager.getInstance().save(cfg, pref);
+		}
 	}
 
 	private void updateMonitor(String msg, IProgressMonitor monitor) {
@@ -234,10 +260,8 @@ public class MesonHelper {
 	/**
 	 * Run 'meson' command.
 	 *
-	 * @param console
-	 *            the build console to send messages to
-	 * @param buildDir
-	 *            abs. path
+	 * @param console  the build console to send messages to
+	 * @param buildDir abs. path
 	 * @param srcDir
 	 * @return a MultiStatus object, where .getCode() return the severity
 	 * @throws CoreException
@@ -248,7 +272,7 @@ public class MesonHelper {
 
 		IPath cwd = project.getLocation();
 		boolean buildDirExists = new File(buildDir.toOSString()).exists();
-		if (buildDirExists) {
+		if (buildDirExists && getMesonVersion() < 0.42f) {
 			cwd = buildDir;
 		}
 
@@ -263,100 +287,10 @@ public class MesonHelper {
 				return null;
 			}
 		}
-
-		final List<String> argList = buildCommandline(buildDir);
-		if (argList.isEmpty()) {
-			// nothing to do
-			return null;
-		}
-		// extract meson command
-		final String cmd = argList.get(0);
-		argList.remove(0);
-		// Set the environment
-		IEnvironmentVariable[] variables = config == null ? null
-				: ManagedBuildManager.getEnvironmentVariableProvider().getVariables(config, true);
-		String[] envp = null;
-		ArrayList<String> envList = new ArrayList<>();
-		if (variables != null) {
-			for (int i = 0; i < variables.length; i++) {
-				envList.add(variables[i].getName() + "=" + variables[i].getValue()); //$NON-NLS-1$
-			}
-			envp = envList.toArray(new String[envList.size()]);
-		}
-		// run meson..
-		launcher.showCommand(true);
-		return launcher.execute(new Path(cmd), argList.toArray(new String[argList.size()]), envp, cwd, monitor);
-	}
-
-	public boolean shouldGenerate() {
-		boolean mustGenerate = false;
-		final IFolder buildFolder = getBuildFolder();
-		final File buildDir = buildFolder.getLocation().toFile();
-		if (buildFolder.exists()) {
-			final File makefile = new File(buildDir, getMakefileName());
-			if (!buildDir.exists() || !makefile.exists()) {
-				mustGenerate = true;
-			}
-		} else {
-			mustGenerate = true;
-		}
-		return mustGenerate;
-	}
-
-	public String getMakefileName() {
-		// load project properties..
-		MesonPreferences prefs;
-		try {
-			prefs = ConfigurationManager.getInstance().getOrLoad(cfgd);
-		} catch (CoreException ex) {
-			// Auto-generated catch block
-			ex.printStackTrace();
-			return "build.ninja"; // default
-		}
-		AbstractOsPreferences osPrefs = AbstractOsPreferences.extractOsPreferences(prefs);
-		// file generated by meson
-		return osPrefs.getBackend().getMakefileName();
-	}
-
-	private float getMesonVersion() {
-		try {
-			final MesonPreferences prefs = ConfigurationManager.getInstance().getOrLoad(cfgd);
-			final AbstractOsPreferences osPrefs = AbstractOsPreferences.extractOsPreferences(prefs);
-			ProcessBuilder pb = new ProcessBuilder(getCommand(osPrefs), "-version");
-			pb.redirectErrorStream(true);
-			Process p = pb.start();
-			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-				try {
-					String[] parts = br.readLine().split("\\.");
-					return Float.parseFloat(parts[0] + "." + parts[1]);
-				} finally {
-					br.close();
-				}
-			} finally {
-				if (p.waitFor() != 0)
-					throw new IllegalStateException("Command returned non-zero status.");
-			}
-		} catch (Exception e) {
-			System.err.print("WARNING: Could not determine meson version, assuming 0.40.x");
-			e.printStackTrace();
-			return 0.40f;
-		}
-
-	}
-
-	/**
-	 * Build the command-line for meson. The first argument will be the
-	 * meson-command.
-	 *
-	 * @throws CoreException
-	 */
-	private List<String> buildCommandline(IPath buildDir) throws CoreException {
-
 		boolean needVerboseBuild = false;
 		{
-			final List<ILanguageSettingsProvider> lsps = ((ILanguageSettingsProvidersKeeper) cfgd)
-					.getLanguageSettingProviders();
+			final List<ILanguageSettingsProvider> lsps = ((ILanguageSettingsProvidersKeeper) getConfigurationDescription(
+					false)).getLanguageSettingProviders();
 			for (ILanguageSettingsProvider lsp : lsps) {
 				if (!needVerboseBuild
 						&& ("org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser".equals(lsp.getId())
@@ -368,11 +302,10 @@ public class MesonHelper {
 			}
 		}
 
-		final MesonPreferences prefs = ConfigurationManager.getInstance().getOrLoad(cfgd);
+		final MesonPreferences prefs = ConfigurationManager.getInstance().getOrLoad(getConfigurationDescription(false));
 		final AbstractOsPreferences osPrefs = AbstractOsPreferences.extractOsPreferences(prefs);
 
 		List<String> args = new ArrayList<>();
-		boolean buildDirExists = new File(buildDir.toOSString()).exists();
 		List<ProjectOption> projectOptions = prefs.getProjectOptions();
 		if (!buildDirExists) {
 
@@ -409,22 +342,177 @@ public class MesonHelper {
 			// tell meson where its script is located..
 			args.add(buildDir.toOSString());
 		} else {
-			if (!projectOptions.isEmpty()) {
-				if (getMesonVersion() >= 0.42f) {
-					args.add(getCommand(osPrefs));
-					args.add("configure");
-				} else {
-					args.add("mesonconf");
-				}
+			if (getMesonVersion() >= 0.42f) {
+				args.add(getCommand(osPrefs));
+				args.add("configure");
 
-				// TODO how do we reconfigure other stuff? maybe just output a message telling
-				// user to upgrade Meson or clean the workspace. We would need to detect actual
-				// changes to configuration though
+				args.add("-Dlayout=" + prefs.getLayout().name().toLowerCase());
+				args.add("-Dstrip=" + prefs.isStrip());
+				args.add("-Ddefault_library=" + prefs.getDefaultLibrary().name().toLowerCase());
+				args.add("-Dunity=" + prefs.getUnity().name().toLowerCase());
+				args.add("-Dwerror=" + prefs.isWarningsAsErrors());
+				args.add("-Dstdsplit=" + prefs.isStdSplit());
+				args.add("-Derrorlogs=" + prefs.isErrorLogs());
+				args.add("-Dwarning_level=" + prefs.getWarnLevel());
+				args.add("-Dbuildtype="
+						+ (prefs.getBuildType() == null ? "debug" : prefs.getBuildType().name().toLowerCase()));
+
 				appendProjectOptions(args, projectOptions);
+				args.add(buildDir.toOSString());
+
+			} else {
+				args.add("mesonconf");
+				appendProjectOptions(args, projectOptions);
+			}
+
+		}
+
+		// environment
+		Map<String, String> env = new HashMap<>();
+		env.putAll(System.getenv());
+		IEnvironmentVariable[] variables = config == null ? null
+				: ManagedBuildManager.getEnvironmentVariableProvider().getVariables(config, true);
+		if (variables != null) {
+			for (int i = 0; i < variables.length; i++) {
+				env.put(variables[i].getName(), variables[i].getValue()); // $NON-NLS-1$
 			}
 		}
 
-		return args;
+		// extract meson command
+		String cmd = args.remove(0);
+		final java.nio.file.Path cmdpath = findCommand(cmd);
+		if (cmdpath != null)
+			cmd = cmdpath.toFile().getAbsolutePath();
+		File cmdFile = new File(cmd);
+		if (cmdFile.isAbsolute()) {
+			String p = env.get("PATH");
+			if (p == null) {
+				p = env.get("Path");
+				if (p == null)
+					if (Platform.getOS().equals(org.eclipse.core.runtime.Platform.OS_WIN32))
+						env.put("Path", cmdFile.getParentFile().getAbsolutePath());
+					else
+						env.put("PATH", cmdFile.getParentFile().getAbsolutePath());
+				else
+					env.put("Path", cmdFile.getParentFile().getAbsolutePath() + File.pathSeparator + p);
+			} else
+				env.put("PATH", cmdFile.getParentFile().getAbsolutePath() + File.pathSeparator + p);
+		}
+
+		try {
+			final ConsoleOutputStream cis = console.getInfoStream();
+			cis.write(SimpleDateFormat.getTimeInstance().format(new Date()).getBytes());
+			cis.write((" Running: " + cmd + " " + String.join(" ", args) + "\n").getBytes());
+		} catch (IOException ignore) {
+		}
+		launcher.showCommand(true);
+		String[] envp = null;
+		if (!env.isEmpty()) {
+			envp = new String[env.size()];
+			int i = 0;
+			for (Map.Entry<String, String> en : env.entrySet()) {
+				envp[i++] = en.getKey() + "=" + en.getValue();
+			}
+		}
+
+		return launcher.execute(new Path(cmd), args.toArray(new String[args.size()]), envp, cwd, monitor);
+	}
+
+	public boolean shouldGenerate() throws CoreException {
+		boolean mustGenerate = false;
+		final IFolder buildFolder = getBuildFolder();
+		final File buildDir = buildFolder.getLocation().toFile();
+		if (buildFolder.exists()) {
+			final File makefile = new File(buildDir, getMakefileName());
+			if (!buildDir.exists() || !makefile.exists()) {
+				mustGenerate = true;
+			}
+		} else {
+			mustGenerate = true;
+		}
+		if (getMesonPreferences().isNeedsReconfigure())
+			mustGenerate = true;
+		return mustGenerate;
+	}
+
+	public String getMakefileName() {
+		// load project properties..
+		MesonPreferences prefs;
+		try {
+			prefs = ConfigurationManager.getInstance().getOrLoad(getConfigurationDescription(false));
+		} catch (CoreException ex) {
+			// Auto-generated catch block
+			ex.printStackTrace();
+			return "build.ninja"; // default
+		}
+		AbstractOsPreferences osPrefs = AbstractOsPreferences.extractOsPreferences(prefs);
+		// file generated by meson
+		return osPrefs.getBackend().getMakefileName();
+	}
+
+	protected java.nio.file.Path findCommand(String command) {
+		try {
+			java.nio.file.Path cmdPath = Paths.get(command);
+			if (cmdPath.isAbsolute()) {
+				return cmdPath;
+			}
+
+			Map<String, String> env = new HashMap<>(System.getenv());
+			String pathStr = env.get("PATH"); //$NON-NLS-1$
+			if (pathStr == null) {
+				pathStr = env.get("Path"); // for Windows //$NON-NLS-1$
+				if (pathStr == null) {
+					return null; // no idea
+				}
+			}
+			String[] path = pathStr.split(File.pathSeparator);
+			for (String dir : path) {
+				java.nio.file.Path commandPath = Paths.get(dir, command);
+				if (Files.exists(commandPath)) {
+					return commandPath;
+				} else {
+					if (Platform.getOS().equals(org.eclipse.core.runtime.Platform.OS_WIN32)
+							&& !(command.endsWith(".exe") || command.endsWith(".bat"))) { //$NON-NLS-1$ //$NON-NLS-2$
+						commandPath = Paths.get(dir, command + ".exe"); //$NON-NLS-1$
+						if (Files.exists(commandPath)) {
+							return commandPath;
+						}
+					}
+				}
+			}
+		} catch (InvalidPathException e) {
+			// ignore
+		}
+		return null;
+	}
+
+	private float getMesonVersion() {
+		try {
+			final MesonPreferences prefs = ConfigurationManager.getInstance()
+					.getOrLoad(getConfigurationDescription(false));
+			final AbstractOsPreferences osPrefs = AbstractOsPreferences.extractOsPreferences(prefs);
+			String command = getCommand(osPrefs);
+			ProcessBuilder pb = new ProcessBuilder(command, "--version");
+			pb.redirectErrorStream(true);
+			Process p = pb.start();
+			try {
+				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				try {
+					String[] parts = br.readLine().split("\\.");
+					return Float.parseFloat(parts[0] + "." + parts[1]);
+				} finally {
+					br.close();
+				}
+			} finally {
+				if (p.waitFor() != 0)
+					throw new IllegalStateException("Command returned non-zero status.");
+			}
+		} catch (Exception e) {
+			System.err.print("WARNING: Could not determine meson version, assuming 0.40.x");
+			e.printStackTrace();
+			return 0.40f;
+		}
+
 	}
 
 	/**
@@ -432,12 +520,9 @@ public class MesonHelper {
 	 * list will be replaced by the meson command from the specified preferences, if
 	 * given.
 	 *
-	 * @param args
-	 *            the list to append meson-arguments to.
-	 * @param prefs
-	 *            the generic OS preferences to convert and append.
-	 * @throws CoreException
-	 *             if unable to resolve the value of one or more variables
+	 * @param args  the list to append meson-arguments to.
+	 * @param prefs the generic OS preferences to convert and append.
+	 * @throws CoreException if unable to resolve the value of one or more variables
 	 */
 	private void appendAbstractOsPreferences(List<String> args, final AbstractOsPreferences prefs)
 			throws CoreException {
@@ -449,12 +534,9 @@ public class MesonHelper {
 	 * Appends arguments for the specified project options. Performs substitutions
 	 * on variables found in a value of each define.
 	 *
-	 * @param args
-	 *            the list to append meson-arguments to.
-	 * @param defines
-	 *            the meson project option to convert and append.
-	 * @throws CoreException
-	 *             if unable to resolve the value of one or more variables
+	 * @param args    the list to append meson-arguments to.
+	 * @param defines the meson project option to convert and append.
+	 * @throws CoreException if unable to resolve the value of one or more variables
 	 */
 	private void appendProjectOptions(List<String> args, final List<ProjectOption> defines) throws CoreException {
 		final ICdtVariableManager mngr = CCorePlugin.getDefault().getCdtVariableManager();
@@ -462,7 +544,7 @@ public class MesonHelper {
 			final StringBuilder sb = new StringBuilder("-D");
 			sb.append(def.getName());
 			sb.append('=');
-			String expanded = mngr.resolveValue(def.getValue(), "", "", cfgd);
+			String expanded = mngr.resolveValue(def.getValue(), "", "", getConfigurationDescription(false));
 			sb.append(expanded);
 			args.add(sb.toString());
 		}
@@ -471,8 +553,10 @@ public class MesonHelper {
 	private String getCommand(AbstractOsPreferences prefs) throws CdtVariableException {
 		if (!prefs.getUseDefaultCommand() && prefs.getCommand() != null && !prefs.getCommand().equals("")) {
 			ICdtVariableManager varManager = CCorePlugin.getDefault().getCdtVariableManager();
-			return varManager.resolveValue(prefs.getCommand(), "<undefined variable here, but CDT does not allow"
-					+ " to pass it unexpanded; thus its name is lost>", null, cfgd);
+			return varManager.resolveValue(prefs.getCommand(),
+					"<undefined variable here, but CDT does not allow"
+							+ " to pass it unexpanded; thus its name is lost>",
+					null, getConfigurationDescription(false));
 		}
 		return "meson";
 	}
@@ -537,8 +621,7 @@ public class MesonHelper {
 	 * system ignores the contents. If the resource exists, respect the existing
 	 * derived setting.
 	 *
-	 * @param folder
-	 *            a folder, somewhere below the project root
+	 * @param folder a folder, somewhere below the project root
 	 */
 	// private void createFolder(IFolder folder) throws CoreException {
 	// if (!folder.exists()) {

@@ -1,79 +1,44 @@
+/*******************************************************************************
+ * Copyright (c) 2014-2017 Martin Weber.
+ * Copyright (c) 2018 Emerald Icemoon
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *      Martin Weber - Initial implementation
+ *      Emerald Icemoon - Ported to Ninja
+ *******************************************************************************/
 package org.icemoon.cdt.ninja.ui.internal.preferences;
 
-import org.eclipse.cdt.utils.ui.controls.ControlFactory;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.PropertyPage;
-import org.icemoon.cdt.ninja.core.corebuild.internal.NinjaBuildConfiguration;
+import org.eclipse.cdt.managedbuilder.core.ManagedCProjectNature;
+import org.eclipse.cdt.ui.newui.AbstractPage;
+import org.eclipse.core.runtime.CoreException;
 
-public class NinjaPropertyPage extends PropertyPage {
+/**
+ * Page for Meson project settings.
+ *
+ * @author Martin Weber
+ * @author Emerald Icemoon
+ */
+public class NinjaPropertyPage extends AbstractPage {
 
-	private Text buildCommandText;
-	private Text cleanCommandText;
-	private Button useCustomCommands;
-
-	private Label cleanCommandLabel;
-
-	private Label buildCommandLabel;
-
+	/*-
+	 * @see org.eclipse.cdt.ui.newui.AbstractPage#isSingle()
+	 */
 	@Override
-	protected Control createContents(Composite parent) {
-
-		Composite comp = new Composite(parent, SWT.NONE);
-		comp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		comp.setLayout(new GridLayout());
-		IPreferenceStore prefs = getPreferenceStore();
-
-		useCustomCommands = ControlFactory.createCheckBox(comp, (Messages.NinjaBuildTab_UseCustom));
-		((GridData) useCustomCommands.getLayoutData()).horizontalSpan = 2;
-		boolean keepLog = prefs.getBoolean(NinjaBuildConfiguration.USE_CUSTOM_COMMANDS);
-		useCustomCommands.setSelection(keepLog);
-		useCustomCommands.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				updateEnablements();
-			}
-		});
-
-		buildCommandLabel = new Label(comp, SWT.NONE);
-		buildCommandLabel.setText(Messages.NinjaBuildTab_BuildCommand);
-
-		buildCommandText = new Text(comp, SWT.BORDER);
-		buildCommandText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-		cleanCommandLabel = new Label(comp, SWT.NONE);
-		cleanCommandLabel.setText(Messages.NinjaBuildTab_CleanCommand);
-
-		cleanCommandText = new Text(comp, SWT.BORDER);
-		cleanCommandText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-		updateEnablements();
-		return comp;
+	protected boolean isSingle() {
+		return false;
 	}
 
 	@Override
-	public boolean performOk() {
-		IPreferenceStore prefs = getPreferenceStore();
-		prefs.setValue(NinjaBuildConfiguration.USE_CUSTOM_COMMANDS, useCustomCommands.getSelection());
-		prefs.setValue(NinjaBuildConfiguration.BUILD_COMMAND, buildCommandText.getText());
-		prefs.setValue(NinjaBuildConfiguration.CLEAN_COMMAND, cleanCommandText.getText());
-		return true;
+	protected boolean showsConfig() {
+		try {
+			return isForProject() && getProject().getNature(ManagedCProjectNature.MNG_NATURE_ID) != null;
+		} catch (CoreException e) {
+			return false;
+		}
 	}
 
-	private void updateEnablements() {
-		boolean isLoggingEnabled = useCustomCommands.getSelection();
-		buildCommandText.setEnabled(isLoggingEnabled);
-		cleanCommandText.setEnabled(isLoggingEnabled);
-		buildCommandLabel.setEnabled(isLoggingEnabled);
-		cleanCommandLabel.setEnabled(isLoggingEnabled);
-	}
 }

@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.icemoon.cdt.ninja.ui.internal.preferences.NinjaFileEditorPreferenceConstants;
 import org.icemoon.cdt.ninja.ui.internal.preferences.NinjaFileEditorPreferencePage;
-import org.icemoon.cdt.ninja.ui.internal.preferences.NinjaPreferencePage;
 
 public class NinjaUIPreferenceInitializer extends AbstractPreferenceInitializer {
 
@@ -29,7 +28,6 @@ public class NinjaUIPreferenceInitializer extends AbstractPreferenceInitializer 
 	@Override
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = NinjaUIPlugin.getDefault().getPreferenceStore();
-		NinjaPreferencePage.initDefaults(store);
 		NinjaFileEditorPreferenceConstants.initializeDefaultValues(store);
 		NinjaFileEditorPreferencePage.initDefaults(store);
 	}

@@ -17,7 +17,7 @@
    </bundle>
    <category-def name="meson4eclipse" label="Meson for Eclipse">
       <description>
-         Integrates the Meson cross-platform buildscript generator into Eclipse C/C++ Development Toolkit (CDT).
+         Integrates the Meson cross-platform buildscript generator into Eclipse C/C++ Development Toolkit (CDT). Also included is Ninja integration.
       </description>
    </category-def>
 </site>

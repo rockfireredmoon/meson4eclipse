@@ -48,18 +48,7 @@
             class="org.icemoon.cdt.ninja.ui.internal.preferences.NinjaFileEditorPreferencePage"
             id="org.icemoon.cdt.ninja.ui.preferences.NinjaFileEditorPreferencePage">
       </page>
-      <page
-            name="%PreferenceNinja.name"
-            category="org.eclipse.cdt.ui.preferences.BuildSettings"
-            class="org.icemoon.cdt.ninja.ui.internal.preferences.NinjaPreferencePage"
-            id="org.icemoon.cdt.ninja.ui.preferences.NinjaPreferencePage">
-      </page>
-      <page
-            name="%PreferenceBuildSettings.name"
-            category="org.eclipse.cdt.ui.preferences.BuildSettings"
-            class="org.icemoon.cdt.ninja.ui.internal.preferences.BuildSettingsPreferencePage"
-            id="org.eclipse.cdt.ui.preferences.BuildSettingProperties">
-      </page>
+     
    </extension>
    
    <!--
@@ -158,7 +147,7 @@
    
     	<page
             class="org.icemoon.cdt.ninja.ui.internal.preferences.NinjaPropertyPage"
-            id="org.eclipse.cdt.autotools.ui.propertypage"
+            id="org.icemoon.cdt.ninja.ui.propertypage"
             name="%PropertyNinja.name">
           <filter
                name="projectNature"
@@ -174,12 +163,9 @@
        
    </extension>
    
-   <extension
-         point="org.eclipse.cdt.launch.coreBuildTab">
-      <provider
-            nature="org.icemoon.cdt.ninja.core.ninjaNature"
-            tabClass="org.icemoon.cdt.ninja.ui.internal.preferences.NinjaBuildTab">
-      </provider>
+   <extension point="org.eclipse.cdt.ui.cPropertyTab">
+      <tab class="org.icemoon.cdt.ninja.ui.internal.preferences.NinjaPropertyTab" helpId="org.icemoon.cdt.ninja.core.t_ninja_options_general" name="&amp;General" parent="org.icemoon.cdt.ninja.ui.internal.preferences.NinjaPropertyPage" tooltip="Ninja custom commands" />
    </extension>
+   
 </plugin>
 

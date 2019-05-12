@@ -4,7 +4,7 @@ Bundle-Name: %bundleName
 Bundle-Description: meson4eclipse support for CDT Indexer (include path providers)
 Bundle-Copyright: 2013-2017 Martin Weber, 2018 Emerald Icemoon
 Bundle-SymbolicName: org.icemoon.cdt.ninja.ui;singleton:=true
-Bundle-Version: 0.0.1.qualifier
+Bundle-Version: 0.9.0.qualifier
 Bundle-Vendor: Emerald Icemoon
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

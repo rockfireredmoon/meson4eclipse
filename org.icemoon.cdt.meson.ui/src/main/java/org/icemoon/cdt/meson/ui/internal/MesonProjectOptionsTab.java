@@ -144,8 +144,7 @@ public class MesonProjectOptionsTab extends QuirklessAbstractCPropertyTab {
 			MesonPreferences prefs = ConfigurationManager.getInstance().get(cfgd);
 
 			// save as project settings..
-			ICStorageElement storage = cfgd.getStorage(MesonPreferences.CFG_STORAGE_ID, true);
-			prefs.saveToStorage(storage);
+			ConfigurationManager.getInstance().save(cfgd, prefs);
 
 		} catch (CoreException ex) {
 			log.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, null, ex));

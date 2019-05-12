@@ -37,7 +37,6 @@ import org.icemoon.cdt.ninja.core.internal.EmptyLine;
 import org.icemoon.cdt.ninja.core.internal.Include;
 import org.icemoon.cdt.ninja.core.internal.NinjaFileReader;
 import org.icemoon.cdt.ninja.core.internal.OverrideVariable;
-import org.icemoon.cdt.ninja.core.internal.PosixMakefileUtil;
 import org.icemoon.cdt.ninja.core.internal.Rule;
 import org.icemoon.cdt.ninja.core.internal.Subninja;
 import org.icemoon.cdt.ninja.core.internal.Target;
@@ -231,7 +230,7 @@ public class NinjaFile extends AbstractMakefile {
 		if (index != -1) {
 			keyword = line.substring(0, index).trim();
 			String req = line.substring(index + 1);
-			reqs = PosixMakefileUtil.findPrerequisites(req);
+			reqs = NinjaFileUtil.findPrerequisites(req);
 		} else {
 			keyword = line;
 			reqs = new String[0];

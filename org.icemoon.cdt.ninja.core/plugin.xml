@@ -4,7 +4,7 @@
   
    <extension
          id="ninjaNature"
-         name="%ninjaMake.name"
+         name="%NinjaMakeNature.name"
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run

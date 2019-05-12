@@ -84,7 +84,7 @@ public class MesonBuildRunner extends ExternalBuildRunner {
 			}
 
 			builder = new MesonBuildToolInjectorBuilder(builder,
-					new MesonHelper(configuration.getName(), null, null, null, project, cfgd, configuration));
+					new MesonHelper(configuration.getName(), null, null, null, project, configuration));
 		}
 		try {
 			return super.invokeBuild(kind, project, configuration, builder, console, markerGenerator, projectBuilder,

@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.icemoon.cdt.ninja.core.NinjaPlugin;
+import org.icemoon.cdt.ninja.core.corebuild.NinjaBuildConfiguration;
 
 public class NinjaBuildConfigurationProvider implements ICBuildConfigurationProvider {
 
@@ -76,7 +77,7 @@ public class NinjaBuildConfigurationProvider implements ICBuildConfigurationProv
 		for (IBuildConfiguration config : project.getBuildConfigs()) {
 			ICBuildConfiguration cconfig = config.getAdapter(ICBuildConfiguration.class);
 			if (cconfig != null) {
-				CBuildConfiguration cmakeConfig = cconfig.getAdapter(NinjaBuildConfiguration.class);
+				NinjaBuildConfiguration cmakeConfig = cconfig.getAdapter(NinjaBuildConfiguration.class);
 				if (cmakeConfig != null && cmakeConfig.getToolChain().equals(toolChain)
 						&& launchMode.equals(cmakeConfig.getLaunchMode())) {
 					return cconfig;
@@ -96,7 +97,7 @@ public class NinjaBuildConfigurationProvider implements ICBuildConfigurationProv
 		}
 
 		// create config
-		String configName = "autotools." + launchMode + '.' + toolChain.getId(); //$NON-NLS-1$
+		String configName = "ninja." + launchMode + '.' + toolChain.getId(); //$NON-NLS-1$
 		IBuildConfiguration config = configManager.createBuildConfiguration(this, project, configName, monitor);
 		CBuildConfiguration autotoolsConfig = new NinjaBuildConfiguration(config, configName);
 		configManager.addBuildConfiguration(config, autotoolsConfig);

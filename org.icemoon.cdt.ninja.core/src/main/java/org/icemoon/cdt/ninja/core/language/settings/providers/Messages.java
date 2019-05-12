@@ -16,6 +16,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.icemoon.cdt.ninja.core.language.settings.providers.messages"; //$NON-NLS-1$
 	public static String NinjaBuildConfiguration_Building;
+	public static String NinjaBuildConfiguration_Failed;
 	public static String NinjaBuildConfiguration_BuildingIn;
 	public static String NinjaBuildConfiguration_BuildingComplete;
 	public static String NinjaBuildConfiguration_Cleaning;

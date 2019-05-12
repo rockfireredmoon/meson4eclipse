@@ -13,6 +13,7 @@ package org.icemoon.cdt.meson.core.corebuild.internal;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,11 +28,8 @@ import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.build.CBuildConfiguration;
 import org.eclipse.cdt.core.build.IToolChain;
-import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.cdt.core.resources.IConsole;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
@@ -45,11 +43,11 @@ import org.icemoon.cdt.meson.core.Activator;
 import org.icemoon.cdt.meson.core.ArgumentLine;
 import org.icemoon.cdt.meson.core.IMesonCrossCompileFile;
 import org.icemoon.cdt.meson.core.IMesonCrossCompileManager;
+import org.icemoon.cdt.meson.core.MesonBackend;
 import org.icemoon.cdt.meson.core.MesonErrorParser;
 import org.icemoon.cdt.meson.core.internal.CompileCommand;
 import org.icemoon.cdt.meson.core.internal.MesonHelper;
-import org.icemoon.cdt.meson.core.settings.ConfigurationManager;
-import org.icemoon.cdt.meson.core.settings.MesonPreferences;
+import org.icemoon.cdt.ninja.core.corebuild.NinjaBuildConfiguration;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -92,9 +90,7 @@ public class MesonBuildConfiguration extends CBuildConfiguration {
 			saveToolChainFile();
 		}
 
-		ICConfigurationDescription configurationDescription = getConfigurationDescription();
-		helper = new MesonHelper(config.getName(), null, crossCompileFile, toolChain, config.getProject(),
-				configurationDescription, null);
+		helper = new MesonHelper(config.getName(), null, crossCompileFile, toolChain, config.getProject(), null);
 	}
 
 	private void saveToolChainFile() {
@@ -116,7 +112,6 @@ public class MesonBuildConfiguration extends CBuildConfiguration {
 			project.deleteMarkers(MesonErrorParser.MESON_PROBLEM_MARKER_ID, false, IResource.DEPTH_INFINITE);
 			ConsoleOutputStream outStream = console.getOutputStream();
 			IPath buildDir = helper.getBuildFolder().getLocation();
-			outStream.write(String.format(Messages.MesonBuildConfiguration_BuildingIn, buildDir.toString()));
 			if (helper.shouldGenerate()) {
 
 				IStatus status = null;
@@ -125,21 +120,19 @@ public class MesonBuildConfiguration extends CBuildConfiguration {
 					epm.setOutputStream(console.getErrorStream());
 					Process process = helper.regenerateMakefiles(monitor, console);
 					if (process == null)
-						throw new CoreException(
-								new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, Messages.MesonBuildConfiguration_2, null));
+						throw new CoreException(new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR,
+								Messages.MesonBuildConfiguration_2, null));
 					watchProcess(process, new IConsoleParser[] { epm });
 					// check meson exit status
 					final int exitValue = process.exitValue();
 					if (exitValue != 0) {
 						// meson had errors...
-						status = new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR,
-								String.format(Messages.MesonBuildConfiguration_3,
-										helper.getBuildCommand(null), exitValue),
-								null);
+						status = new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, String.format(
+								Messages.MesonBuildConfiguration_3, helper.getBuildCommand(null), exitValue), null);
 					}
 				} catch (IOException ioe) {
-					throw new CoreException(
-							new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, Messages.MesonBuildConfiguration_4, ioe));
+					throw new CoreException(new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR,
+							Messages.MesonBuildConfiguration_4, ioe));
 				}
 
 				if (status != null && status.getCode() != IStatus.OK) {
@@ -150,24 +143,33 @@ public class MesonBuildConfiguration extends CBuildConfiguration {
 			// TODO getLaunchMode() - make sure meson is in debug mode if launching as
 			// debug?
 
-			List<String> epis = new ArrayList<String>(Arrays.asList(getToolChain().getErrorParserIds()));
-			if (!epis.contains(MesonErrorParser.ID))
-				epis.add(MesonErrorParser.ID);
-			try (ErrorParserManager epm = new ErrorParserManager(project, getBuildDirectoryURI(), this,
-					epis.toArray(new String[0]))) {
-				epm.setOutputStream(console.getErrorStream());
+			if (helper.getBackend() == MesonBackend.NINJA) {
+				NinjaBuildConfiguration ninjaCfg = createNinjaConfiguration();
+				ninjaCfg.build(kind, args, console, monitor);
+			} else {
+				outStream.write(String.format(Messages.MesonBuildConfiguration_BuildingIn, buildDir.toString()));
+				List<String> epis = new ArrayList<String>(Arrays.asList(getToolChain().getErrorParserIds()));
+				if (!epis.contains(MesonErrorParser.ID))
+					epis.add(MesonErrorParser.ID);
+				try (ErrorParserManager epm = new ErrorParserManager(project, getBuildDirectoryURI(), this,
+						epis.toArray(new String[0]))) {
+					epm.setOutputStream(console.getErrorStream());
 
-				String buildCommand = helper.getBuildCommand(null);
-				ArgumentLine argumentLine = new ArgumentLine(buildCommand);
-				Path cmdPath = findCommand(argumentLine.get(0));
-				if (cmdPath != null) {
-					argumentLine.set(0, cmdPath.toString());
+					String buildCommand = helper.getBuildCommand(null);
+					ArgumentLine argumentLine = new ArgumentLine(buildCommand);
+					Path cmdPath = findCommand(argumentLine.get(0));
+					if (cmdPath != null) {
+						argumentLine.set(0, cmdPath.toString());
+					}
+					ProcessBuilder processBuilder = new ProcessBuilder(argumentLine).directory(buildDir.toFile());
+					setBuildEnvironment(processBuilder.environment());
+					Process process = processBuilder.start();
+					outStream.write(String.join(" ", argumentLine) + '\n'); //$NON-NLS-1$
+					watchProcess(process, new IConsoleParser[] { epm });
+
+					outStream.write(
+							String.format(Messages.MesonBuildConfiguration_BuildingComplete, buildDir.toString()));
 				}
-				ProcessBuilder processBuilder = new ProcessBuilder(argumentLine).directory(buildDir.toFile());
-				setBuildEnvironment(processBuilder.environment());
-				Process process = processBuilder.start();
-				outStream.write(String.join(" ", argumentLine) + '\n'); //$NON-NLS-1$
-				watchProcess(process, new IConsoleParser[] { epm });
 
 			}
 
@@ -175,8 +177,6 @@ public class MesonBuildConfiguration extends CBuildConfiguration {
 
 			// Load compile_commands.json file
 			processCompileCommandsFile(monitor);
-
-			outStream.write(String.format(Messages.MesonBuildConfiguration_BuildingComplete, buildDir.toString()));
 
 			return new IProject[] { project };
 		} catch (IOException e) {
@@ -191,17 +191,6 @@ public class MesonBuildConfiguration extends CBuildConfiguration {
 		return env;
 	}
 
-	public ICConfigurationDescription getConfigurationDescription() {
-		ICProjectDescription projDes = CoreModel.getDefault().getProjectDescription(getProject(), false);
-		ICConfigurationDescription[] cfgs = projDes.getConfigurations();
-		// TODO
-		return cfgs[0];
-	}
-
-	public MesonPreferences getMesonPreferencesForProjecct(IProject project) throws CoreException {
-		return ConfigurationManager.getInstance().getOrLoad(getConfigurationDescription());
-	}
-
 	public Path getProjectDirectory() throws CoreException {
 		return Paths.get(getProject().getLocation().toOSString());
 	}
@@ -213,25 +202,40 @@ public class MesonBuildConfiguration extends CBuildConfiguration {
 
 	@Override
 	public void clean(IConsole console, IProgressMonitor monitor) throws CoreException {
-		IProject project = getProject();
-		try {
-			project.deleteMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, false, IResource.DEPTH_INFINITE);
-			ConsoleOutputStream outStream = console.getOutputStream();
-			if (!helper.getBuildFolder().exists()) {
-				outStream.write(Messages.MesonBuildConfiguration_NotFound);
-				return;
+
+		if (helper.getBackend() == MesonBackend.NINJA) {
+			NinjaBuildConfiguration ninjaCfg = createNinjaConfiguration();
+			ninjaCfg.clean(console, monitor);
+		} else {
+			IProject project = getProject();
+			try {
+				project.deleteMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, false, IResource.DEPTH_INFINITE);
+				ConsoleOutputStream outStream = console.getOutputStream();
+				if (!helper.getBuildFolder().exists()) {
+					outStream.write(Messages.MesonBuildConfiguration_NotFound);
+					return;
+				}
+				ArgumentLine argumentLine = new ArgumentLine(helper.getBackend().getCleanCommand());
+				Path cmdPath = findCommand(argumentLine.get(0));
+				if (cmdPath != null) {
+					argumentLine.set(0, cmdPath.toString());
+				}
+				helper.build(monitor, console, getBuildEnv(), argumentLine.toArray(new String[0]));
+				project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+			} catch (IOException e) {
+				throw new CoreException(Activator
+						.errorStatus(String.format(Messages.MesonBuildConfiguration_Cleaning, project.getName()), e));
 			}
-			ArgumentLine argumentLine = new ArgumentLine(helper.getBackend().getCleanCommand());
-			Path cmdPath = findCommand(argumentLine.get(0));
-			if (cmdPath != null) {
-				argumentLine.set(0, cmdPath.toString());
-			}
-			helper.build(monitor, console, getBuildEnv(), argumentLine.toArray(new String[0]));
-			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-		} catch (IOException e) {
-			throw new CoreException(Activator
-					.errorStatus(String.format(Messages.MesonBuildConfiguration_Cleaning, project.getName()), e));
 		}
+	}
+
+	private NinjaBuildConfiguration createNinjaConfiguration() throws CoreException {
+		return new NinjaBuildConfiguration(getBuildConfiguration(), getName()) {
+			@Override
+			public URI getBuildDirectoryURI() throws CoreException {
+				return MesonBuildConfiguration.this.getBuildDirectoryURI();
+			}
+		};
 	}
 
 	private void processCompileCommandsFile(IProgressMonitor monitor) throws CoreException {

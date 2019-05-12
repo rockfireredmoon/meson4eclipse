@@ -13,13 +13,11 @@
 package org.icemoon.cdt.ninja.core;
 
 public class NinjaConstants {
+	public static final String CFG_STORAGE_ID = NinjaPlugin.PLUGIN_ID + ".settings";
 
-	public static final String RULE_DEFAULT = ".DEFAULT"; //$NON-NLS-1$
-	public static final String RULE_IGNORE = ".IGNORE"; //$NON-NLS-1$
-	public static final String RULE_POSIX = ".POSIX"; //$NON-NLS-1$
-	public static final String RULE_PRECIOUS = ".PRECIOUS"; //$NON-NLS-1$
-	public static final String RULE_SCCS_GET = ".SCCS_GET"; //$NON-NLS-1$
-	public static final String RULE_SILENT = ".SILENT"; //$NON-NLS-1$
-	public static final String RULE_SUFFIXES = ".SUFFIXES"; //$NON-NLS-1$
+	public static final String BUILD_COMMAND = "ninja.command.build"; //$NON-NLS-1$
+	public static final String CLEAN_COMMAND = "ninja.command.clean"; //$NON-NLS-1$
+	public static final String USE_CUSTOM_COMMANDS = "ninja.custom";
+
 
 }

@@ -114,4 +114,10 @@ public final class ConfigurationManager {
 		}
 		return pref;
 	}
+	
+	public void save(ICConfigurationDescription cfgd, MesonPreferences prefs) throws CoreException {
+		ICStorageElement storage = cfgd.getStorage(MesonPreferences.CFG_STORAGE_ID, true);
+		map.put(cfgd.getId(), prefs);
+		prefs.saveToStorage(storage);
+	}
 }

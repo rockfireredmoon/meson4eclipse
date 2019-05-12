@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
@@ -415,13 +416,11 @@ public class MesonPropertyTab extends QuirklessAbstractCPropertyTab {
 						.getItems();
 
 				for (int i = 0; i < prefs.length; i++) {
-					ICStorageElement storage = cfgs[i].getStorage(MesonPreferences.CFG_STORAGE_ID, true);
-					prefs[i].saveToStorage(storage);
+					ConfigurationManager.getInstance().save(cfgs[i], prefs[i]);
 				}
 			} else {
 				// we are editing a single configuration...
-				ICStorageElement storage = cfgd.getStorage(MesonPreferences.CFG_STORAGE_ID, true);
-				prefs[0].saveToStorage(storage);
+				ConfigurationManager.getInstance().save(cfgd, prefs[0]);
 			}
 		} catch (CoreException ex) {
 			log.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, null, ex));
@@ -462,17 +461,23 @@ public class MesonPropertyTab extends QuirklessAbstractCPropertyTab {
 					final String dir = t_outputFolder.getText();
 					pref.setBuildDirectory(dir.trim().isEmpty() ? null : dir);
 				}
+				pref.needsReconfigure();
 			}
 		} else {
 			// we are editing a single configuration...
 			MesonPreferences pref = prefs[0];
-			pref.setWarnLevel((Integer) (b_warnLevel.getStructuredSelection().getFirstElement()));
+			IStructuredSelection sel = b_warnLevel.getStructuredSelection();
+			if(sel == null)
+				pref.setWarnLevel(Integer.parseInt(b_warnLevel.getCombo().getText()));
+			else
+				pref.setWarnLevel((Integer) (sel.getFirstElement()));
 			pref.setDefaultLibrary((MesonDefaultLibrary) b_defaultLibrary.getStructuredSelection().getFirstElement());
 			pref.setBuildType((MesonBuildType) b_buildType.getStructuredSelection().getFirstElement());
 			pref.setStdSplit(b_errorLogs.getSelection());
 			pref.setWarningsAsErrors(b_werror.getSelection());
 			final String dir = t_outputFolder.getText().trim();
 			pref.setBuildDirectory(dir.isEmpty() ? null : dir);
+			pref.needsReconfigure();
 		}
 	}
 

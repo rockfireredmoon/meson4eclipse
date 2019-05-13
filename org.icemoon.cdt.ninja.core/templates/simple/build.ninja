@@ -1,5 +1,5 @@
 # build.ninja
-cc     = g++
+cc     = ${compiler}
 cflags = -Wall
 
 rule compile

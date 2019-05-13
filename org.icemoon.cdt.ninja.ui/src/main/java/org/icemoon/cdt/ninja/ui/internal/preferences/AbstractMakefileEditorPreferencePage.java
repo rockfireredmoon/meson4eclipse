@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.icemoon.cdt.ninja.core.StatusInfo;
 import org.icemoon.cdt.ninja.ui.internal.NinjaUIPlugin;
 
 import com.ibm.icu.text.MessageFormat;

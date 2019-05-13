@@ -4,24 +4,30 @@
   
    <extension
          id="ninjaNature"
-         name="%NinjaMakeNature.name"
+         name="%NinjaNature.name"
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="org.icemoon.cdt.ninja.core.NinjaProjectNature">
+               class="org.icemoon.cdt.ninja.core.managed.NinjaManagedProjectNature">
          </run>
       </runtime>
-      
-   <!--
+   </extension>
+   <extension
+         id="ninjaManagedNature"
+         name="%NinjaManagedNature.name"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="org.icemoon.cdt.ninja.core.managed.NinjaManagedProjectNature">
+         </run>
+      </runtime>
       <builder
-            id="org.eclipse.cdt.ninja.core.ninjaBuilder">
+            id="org.eclipse.cdt.ninja.core.ninjaManagedBuilder">
       </builder>
-      -->
    </extension>
    
-   <!--
 	<extension
-         id="ninjaBuilder"
+         id="org.eclipse.cdt.ninja.core.ninjaManagedBuilder"
          name="%builderNinja.name"
          point="org.eclipse.core.resources.builders">
       <builder
@@ -35,9 +41,6 @@
          </run>
       </builder>
    </extension>
-   -->
-   
-     
    
 	<extension
          point="org.eclipse.cdt.make.core.MakeTargetBuilder">

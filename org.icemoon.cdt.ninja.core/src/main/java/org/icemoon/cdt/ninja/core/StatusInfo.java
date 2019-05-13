@@ -12,11 +12,10 @@
  *     Emerald Icemoon - Ported to Ninja
  *******************************************************************************/
 
-package org.icemoon.cdt.ninja.ui.internal.preferences;
+package org.icemoon.cdt.ninja.core;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
-import org.icemoon.cdt.ninja.ui.internal.NinjaUIPlugin;
 
 /**
  * A settable IStatus. Can be an error, warning, info or ok. For error, info and
@@ -37,11 +36,9 @@ public class StatusInfo implements IStatus {
 	/**
 	 * Creates a status .
 	 * 
-	 * @param severity
-	 *            The status severity: ERROR, WARNING, INFO and OK.
-	 * @param message
-	 *            The message of the status. Applies only for ERROR, WARNING and
-	 *            INFO.
+	 * @param severity The status severity: ERROR, WARNING, INFO and OK.
+	 * @param message  The message of the status. Applies only for ERROR, WARNING
+	 *                 and INFO.
 	 */
 	public StatusInfo(int severity, String message) {
 		fStatusMessage = message;
@@ -90,8 +87,7 @@ public class StatusInfo implements IStatus {
 	/**
 	 * Sets the status to ERROR.
 	 * 
-	 * @param errorMessage
-	 *            The error message (can be empty, but not null)
+	 * @param errorMessage The error message (can be empty, but not null)
 	 */
 	public void setError(String errorMessage) {
 		Assert.isNotNull(errorMessage);
@@ -102,8 +98,7 @@ public class StatusInfo implements IStatus {
 	/**
 	 * Sets the status to WARNING.
 	 * 
-	 * @param warningMessage
-	 *            The warning message (can be empty, but not null)
+	 * @param warningMessage The warning message (can be empty, but not null)
 	 */
 	public void setWarning(String warningMessage) {
 		Assert.isNotNull(warningMessage);
@@ -114,8 +109,7 @@ public class StatusInfo implements IStatus {
 	/**
 	 * Sets the status to INFO.
 	 * 
-	 * @param infoMessage
-	 *            The info message (can be empty, but not null)
+	 * @param infoMessage The info message (can be empty, but not null)
 	 */
 	public void setInfo(String infoMessage) {
 		Assert.isNotNull(infoMessage);
@@ -162,7 +156,7 @@ public class StatusInfo implements IStatus {
 	 */
 	@Override
 	public String getPlugin() {
-		return NinjaUIPlugin.getPluginId();
+		return NinjaPlugin.PLUGIN_ID;
 	}
 
 	/**

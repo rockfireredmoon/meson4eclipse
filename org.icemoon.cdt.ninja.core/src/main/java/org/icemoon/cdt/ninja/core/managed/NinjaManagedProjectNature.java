@@ -10,7 +10,7 @@
  *     QNX Software Systems - Initial API and implementation
  *     Emerald Icemoon - Ported to Ninja
  *******************************************************************************/
-package org.icemoon.cdt.ninja.core;
+package org.icemoon.cdt.ninja.core.managed;
 
 import org.eclipse.cdt.make.core.IMakeBuilderInfo;
 import org.eclipse.cdt.make.core.IMakeCommonBuildInfo;
@@ -20,15 +20,16 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.icemoon.cdt.ninja.core.NinjaPlugin;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.
  * @noinstantiate This class is not intended to be instantiated by clients.
  */
-public class NinjaProjectNature implements IProjectNature {
+public class NinjaManagedProjectNature implements IProjectNature {
 
-	public final static String NATURE_ID = NinjaPlugin.getUniqueIdentifier() + ".ninjaNature"; //$NON-NLS-1$
-	private static final String BUILDER_ID = NinjaPlugin.getUniqueIdentifier() + ".ninjaBuilder"; //$NON-NLS-1$
+	public final static String NATURE_ID = NinjaPlugin.getUniqueIdentifier() + ".ninjaManagedNature"; //$NON-NLS-1$
+	private static final String BUILDER_ID = NinjaPlugin.getUniqueIdentifier() + ".ninjaManagedBuilder"; //$NON-NLS-1$
 	private IProject fProject;
 
 	public static void addNature(IProject project, IProgressMonitor monitor) throws CoreException {

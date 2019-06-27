@@ -70,6 +70,11 @@ public class MesonPreferences {
 	private UUID serial;
 	private UUID stamp;
 
+	public MesonPreferences(ICStorageElement parent) {
+		reset();
+		loadFromStorage(parent);
+	}
+
 	/**
 	 * Creates a new object, initialized with all default values.
 	 */
@@ -93,7 +98,7 @@ public class MesonPreferences {
 		unity = MesonUnity.OFF;
 		errorLogs = true;
 		serial = null;
-		stamp = null;
+		stamp = UUID.randomUUID();
 		// linuxPreferences.reset();
 		// windowsPreferences.reset();
 	}
@@ -107,6 +112,8 @@ public class MesonPreferences {
 	}
 	
 	public void reconfigured() {
+		if(stamp == null)
+			needsReconfigure();
 		serial = stamp;
 	}
 

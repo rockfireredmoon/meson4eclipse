@@ -52,6 +52,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 public class MesonBuildConfiguration extends CBuildConfiguration {
 
@@ -251,8 +252,16 @@ public class MesonBuildConfiguration extends CBuildConfiguration {
 					dedupedCmds.put(command.getFile(), command);
 				}
 				ArgumentLine l = new ArgumentLine();
+				int line = 0;
 				for (CompileCommand command : dedupedCmds.values()) {
-					processLine(l.parse(command.getCommand()).toString());
+					line++;
+					String string = l.parse(command.getCommand()).toString();
+					try {
+						processLine(string);
+					} catch (JsonSyntaxException jse) {
+						System.err.println(String.format("Failed to parse compile commands on line %d.", line));
+						jse.printStackTrace();
+					}
 				}
 				shutdown();
 			} catch (IOException e) {

@@ -131,7 +131,14 @@ public class NinjaBuildConfiguration extends CBuildConfiguration {
 						}
 						for (CompileCommand ccommand : dedupedCmds.values()) {
 							ArgumentLine l = new ArgumentLine();
-							processLine(l.parse(ccommand.getCommand()).toString());
+							String string = l.parse(ccommand.getCommand()).toString();
+							try {
+								processLine(string);
+							}
+							catch(Exception e) {
+								System.err.println("Failed to parse compiler info. '" + string + "'");
+								e.printStackTrace();
+							}
 						}
 					} catch (IOException e) {
 						throw new CoreException(NinjaPlugin.errorStatus(

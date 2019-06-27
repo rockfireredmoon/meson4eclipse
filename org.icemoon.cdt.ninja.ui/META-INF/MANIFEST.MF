@@ -10,7 +10,7 @@ Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.icemoon.cdt.ninja.ui.internal.NinjaUIPlugin
-Require-Bundle: org.icemoon.cdt.ninja.core;bundle-version="0.0.1",
+Require-Bundle: org.icemoon.cdt.ninja.core,
  org.eclipse.jface.text,
  org.eclipse.jface,
  org.eclipse.ui,

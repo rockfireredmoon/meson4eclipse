@@ -32,6 +32,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.managedbuilder.core.ManagedCProjectNature;
 import org.eclipse.cdt.utils.Platform;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -162,6 +163,14 @@ public class MesonHelper {
 		return backend;
 	}
 
+	public boolean isManaged() {
+		try {
+			return project.getNature(ManagedCProjectNature.MNG_NATURE_ID) != null;
+		} catch (CoreException e) {
+			return false;
+		}
+	}
+
 	public IFolder getBuildFolder() {
 		// set the top build dir path for the current configuration
 		String buildDirStr = null;
@@ -175,7 +184,9 @@ public class MesonHelper {
 		IPath buildP;
 		if (buildDirStr == null) {
 			// not configured: fall back to legacy behavior
-			buildP = new Path("builddir").append(configName);
+			buildP = new Path("builddir");
+			if(isManaged())
+				buildP.append(configName);
 		} else {
 			buildP = new Path(buildDirStr);
 		}
@@ -234,13 +245,16 @@ public class MesonHelper {
 		try {
 			return invokeMeson(buildFolder.getLocation(), console, monitor);
 		} finally {
-
-			ICConfigurationDescription cfg = getConfigurationDescription(true);
+			ICProjectDescription projDes = CoreModel.getDefault().getProjectDescription(project, true);
+			ICConfigurationDescription[] cfgs = projDes.getConfigurations();
+			// TODO configuration name
+			ICConfigurationDescription cfg = cfgs[0];
 			MesonPreferences pref = new MesonPreferences();
 			ICStorageElement storage = cfg.getStorage(MesonPreferences.CFG_STORAGE_ID, true);
 			pref.loadFromStorage(storage);
 			pref.reconfigured();
 			ConfigurationManager.getInstance().save(cfg, pref);
+			CoreModel.getDefault().setProjectDescription(project, projDes, false, monitor);
 		}
 	}
 
@@ -315,7 +329,7 @@ public class MesonHelper {
 					+ (prefs.getBuildType() == null ? "debug" : prefs.getBuildType().name().toLowerCase()));
 
 			args.add("--layout=" + prefs.getLayout().name().toLowerCase());
-			
+
 			/* add general settings */
 			if (prefs.isStrip())
 				args.add("--strip");

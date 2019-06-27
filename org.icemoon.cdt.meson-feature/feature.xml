@@ -117,8 +117,12 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <import plugin="org.eclipse.cdt.managedbuilder.core"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.jobs"/>
+      <import plugin="org.eclipse.equinox.preferences"/>
       <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.tools.templates.core"/>
       <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eclipse.cdt.core" version="6.2.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.cdt.ui" version="6.1.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.commands"/>
       <import plugin="org.eclipse.jface"/>
@@ -127,7 +131,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <import plugin="org.eclipse.ui.ide" version="3.12.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.filesystem"/>
-      <import plugin="org.icemoon.cdt.ninja.core" version="0.9.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.tools.templates.freemarker" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.cdt.make.ui" version="7.3.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.editors" version="3.10.0" match="greaterOrEqual"/>
@@ -136,12 +140,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <import plugin="org.eclipse.cdt.launch"/>
       <import plugin="org.eclipse.debug.core"/>
       <import plugin="org.eclipse.debug.ui" version="3.11.00" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.cdt.core" version="6.2.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.tools.templates.freemarker" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.jobs"/>
-      <import plugin="org.eclipse.equinox.preferences"/>
-      <import plugin="org.eclipse.tools.templates.core"/>
-      <import plugin="org.icemoon.cdt.meson.core" version="0.9.0" match="greaterOrEqual"/>
+      <import plugin="org.icemoon.cdt.meson.core"/>
    </requires>
 
    <plugin
